@@ -1,0 +1,36 @@
+{
+  "name": "fastify-redis",
+  "version": "0.1.0",
+  "description": "Plugin to share a common Redis connection across Fastify.",
+  "main": "index.js",
+  "scripts": {
+    "test": "standard && tap test.js",
+    "redis": "docker run -p 6379:6379 redis:3.0.7"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fastify/fastify-redis.git"
+  },
+  "keywords": [
+    "fastify",
+    "redis",
+    "database",
+    "speed",
+    "cache"
+  ],
+  "author": "Tomas Della Vedova - @delvedor (http://delved.org)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fastify/fastify-redis/issues"
+  },
+  "homepage": "https://github.com/fastify/fastify-redis#readme",
+  "devDependencies": {
+    "fastify": "^0.14.0",
+    "standard": "^10.0.0",
+    "tap": "^10.3.1"
+  },
+  "dependencies": {
+    "fastify-plugin": "^0.1.0",
+    "redis": "^2.7.1"
+  }
+}
