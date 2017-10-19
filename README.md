@@ -23,14 +23,14 @@ fastify.register(require('fastify-redis'), {
 })
 
 fastify.get('/foo', (req, reply) => {
-  const { redis } = fastify.redis
+  const { redis } = fastify
   redis.get(req.query.key, (err, val) => {
     reply.send(err || val)
   })
 })
 
 fastify.post('/foo', (req, reply) => {
-  const { redis } = fastify.redis
+  const { redis } = fastify
   redis.set(req.body.key, req.body.value, (err) => {
     reply.send(err || { status: 'ok' })
   })
