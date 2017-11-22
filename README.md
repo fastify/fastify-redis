@@ -4,19 +4,24 @@
 
 Fastify Redis connection plugin, with this you can share the same Redis connection in every part of your server.
 
-Under the hood the official [redis](https://github.com/NodeRedis/node_redis) client is used, the options that you pass to `register` will be passed to the Redis client.
+Under the hood the official [redis](https://github.com/NodeRedis/node_redis) client is used, the ``options`` that you pass to `register` will be passed to the Redis client.
 
 ## Install
 ```
 npm i fastify-redis --save
 ```
 ## Usage
-Add it to you project with `register` and you are done!  
+Add it to you project with `register` and you are done!
 You can access the *Redis* client via `fastify.redis`.
+
+If needed, you can pass a custom ``driver`` option, such as [ioredis](https://github.com/luin/ioredis). By default the official [redis](https://github.com/NodeRedis/node_redis) client is used.
+
+
 ```js
 const fastify = require('fastify')
 
 fastify.register(require('fastify-redis'), {
+  driver: require('ioredis'),
   host: '127.0.0.1'
 }, err => {
   if (err) throw err
