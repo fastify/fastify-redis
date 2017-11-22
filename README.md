@@ -14,13 +14,14 @@ npm i fastify-redis --save
 Add it to you project with `register` and you are done!
 You can access the *Redis* client via `fastify.redis`.
 
-And you can custom your own redis client, use ``driver`` option, now support [ioredis](https://github.com/luin/ioredis) client, default is [redis](https://github.com/NodeRedis/node_redis).
+If needed, you can pass a custom ``driver`` option, such as [ioredis](https://github.com/luin/ioredis). By default the official [redis](https://github.com/NodeRedis/node_redis) client is used.
+
 
 ```js
 const fastify = require('fastify')
 
 fastify.register(require('fastify-redis'), {
-  driver: require('ioredis'), // when you custom your redis client. optional
+  driver: require('ioredis'),
   host: '127.0.0.1'
 }, err => {
   if (err) throw err
