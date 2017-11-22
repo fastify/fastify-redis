@@ -7,8 +7,9 @@ function fastifyRedis (fastify, options, next) {
   var client = null
   try {
     // if custom redis module, default is redis.
-    var Redis = options.driver
-    client = Redis ? new Redis(options.redis) : redis.createClient(options.redis)
+    const Driver = options.driver
+    delete options.driver
+    client = Driver ? new Driver(options) : redis.createClient(options)
   } catch (err) {
     return next(err)
   }

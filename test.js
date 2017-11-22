@@ -9,9 +9,7 @@ t.beforeEach(done => {
   const fastify = Fastify()
 
   fastify.register(fastifyRedis, {
-    redis: {
-      host: '127.0.0.1'
-    }
+    host: '127.0.0.1'
   }, (err) => {
     t.error(err)
   })
@@ -30,9 +28,7 @@ test('fastify.redis should exist', t => {
   t.plan(3)
   const fastify = Fastify()
   fastify.register(fastifyRedis, {
-    redis: {
-      host: '127.0.0.1'
-    }
+    host: '127.0.0.1'
   }, (err) => {
     t.error(err)
   })
@@ -50,9 +46,7 @@ test('fastify.redis should be the redis client', t => {
   const fastify = Fastify()
 
   fastify.register(fastifyRedis, {
-    redis: {
-      host: '127.0.0.1'
-    }
+    host: '127.0.0.1'
   }, (err) => {
     t.error(err)
   })
@@ -78,9 +72,7 @@ test('fastify.redis should exist when use the custom redis driver', t => {
 
   fastify.register(fastifyRedis, {
     driver: require('ioredis'),
-    redis: {
-      host: '127.0.0.1'
-    }
+    host: '127.0.0.1'
   }, (err) => {
     t.error(err)
   })
@@ -99,9 +91,7 @@ test('fastify.redis should be the redis client when use the custom redis driver'
 
   fastify.register(fastifyRedis, {
     driver: require('ioredis'),
-    redis: {
-      host: '127.0.0.1'
-    }
+    host: '127.0.0.1'
   }, (err) => {
     t.error(err)
   })
