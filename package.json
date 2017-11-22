@@ -26,6 +26,7 @@
   "homepage": "https://github.com/fastify/fastify-redis#readme",
   "devDependencies": {
     "fastify": "^0.30.2",
+    "ioredis": "^3.2.1",
     "standard": "^10.0.3",
     "tap": "^10.7.2"
   },

@@ -5,9 +5,10 @@ const redis = require('redis')
 
 function fastifyRedis (fastify, options, next) {
   var client = null
-
   try {
-    client = redis.createClient(options)
+    // if custom redis module, default is redis.
+    var Redis = options.driver
+    client = Redis ? new Redis(options.redis) : redis.createClient(options.redis)
   } catch (err) {
     return next(err)
   }
