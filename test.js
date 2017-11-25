@@ -110,3 +110,26 @@ test('fastify.redis should be the redis client when use the custom redis driver'
     })
   })
 })
+
+test('fastify.redis should be a singleton', t => {
+  t.plan(5)
+  const fastify = Fastify()
+  const redis = require('redis').createClient({host: 'localhost', port: 6379})
+
+  fastify.register(fastifyRedis, {client: redis})
+
+  fastify.ready(err => {
+    t.error(err)
+    t.is(fastify.redis, redis)
+
+    fastify.redis.set('key', 'value', err => {
+      t.error(err)
+      fastify.redis.get('key', (err, val) => {
+        t.error(err)
+        t.equal(val, 'value')
+
+        fastify.close()
+      })
+    })
+  })
+})

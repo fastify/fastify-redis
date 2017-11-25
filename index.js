@@ -4,14 +4,17 @@ const fp = require('fastify-plugin')
 const redis = require('redis')
 
 function fastifyRedis (fastify, options, next) {
-  var client = null
-  try {
-    // if custom redis module, default is redis.
-    const Driver = options.driver
-    delete options.driver
-    client = Driver ? new Driver(options) : redis.createClient(options)
-  } catch (err) {
-    return next(err)
+  var client = options.client || null
+
+  if (!client) {
+    try {
+      // if custom redis module, default is redis.
+      const Driver = options.driver
+      delete options.driver
+      client = Driver ? new Driver(options) : redis.createClient(options)
+    } catch (err) {
+      return next(err)
+    }
   }
 
   fastify

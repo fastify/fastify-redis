@@ -11,7 +11,7 @@ Under the hood the official [redis](https://github.com/NodeRedis/node_redis) cli
 npm i fastify-redis --save
 ```
 ## Usage
-Add it to you project with `register` and you are done!
+Add it to your project with `register` and you are done!
 You can access the *Redis* client via `fastify.redis`.
 
 If needed, you can pass a custom ``driver`` option, such as [ioredis](https://github.com/luin/ioredis). By default the official [redis](https://github.com/NodeRedis/node_redis) client is used.
@@ -45,6 +45,20 @@ fastify.listen(3000, err => {
   if (err) throw err
   console.log(`server listening on ${fastify.server.address().port}`)
 })
+```
+
+You may also supply an existing *Redis* client instance by passing an options
+object with the `client` property set to the instance.
+
+```js
+const fastify = Fastify()
+const redis = require('redis').createClient({host: 'localhost', port: 6379})
+
+fastify.register(fastifyRedis, {client: redis})
+
+// ...
+// ...
+// ...
 ```
 
 ## Acknowledgements
