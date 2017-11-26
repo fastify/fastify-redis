@@ -28,7 +28,7 @@
     "fastify": "^0.30.2",
     "ioredis": "^3.2.1",
     "standard": "^10.0.3",
-    "tap": "^10.7.2"
+    "tap": "^11.0.0"
   },
   "dependencies": {
     "fastify-plugin": "^0.1.1",
