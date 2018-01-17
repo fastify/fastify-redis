@@ -28,4 +28,7 @@ function close (fastify, done) {
   fastify.redis.quit(done)
 }
 
-module.exports = fp(fastifyRedis, '>=0.13.1')
+module.exports = fp(fastifyRedis, {
+  fastify: '>=0.39',
+  name: 'fastify-redis'
+})
