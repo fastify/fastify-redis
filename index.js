@@ -1,17 +1,14 @@
 'use strict'
 
 const fp = require('fastify-plugin')
-const redis = require('redis')
+const Redis = require('ioredis')
 
 function fastifyRedis (fastify, options, next) {
   var client = options.client || null
 
   if (!client) {
     try {
-      // if custom redis module, default is redis.
-      const Driver = options.driver
-      delete options.driver
-      client = Driver ? new Driver(options) : redis.createClient(options)
+      client = new Redis(options)
     } catch (err) {
       return next(err)
     }
@@ -29,6 +26,6 @@ function close (fastify, done) {
 }
 
 module.exports = fp(fastifyRedis, {
-  fastify: '>=0.39',
+  fastify: '>=1.x',
   name: 'fastify-redis'
 })
