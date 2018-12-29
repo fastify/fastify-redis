@@ -42,7 +42,7 @@ fastify.listen(3000, err => {
 
 You may also supply an existing *Redis* client instance by passing an options
 object with the `client` property set to the instance. In this case,
-the client is not automatically close when the Fastify instance is
+the client is not automatically closed when the Fastify instance is
 closed.
 
 ```js
