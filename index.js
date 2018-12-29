@@ -12,11 +12,10 @@ function fastifyRedis (fastify, options, next) {
     } catch (err) {
       return next(err)
     }
+    fastify.addHook('onClose', close)
   }
 
-  fastify
-    .decorate('redis', client)
-    .addHook('onClose', close)
+  fastify.decorate('redis', client)
 
   next()
 }

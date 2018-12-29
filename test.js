@@ -84,7 +84,7 @@ test('promises support', t => {
 })
 
 test('custom client', t => {
-  t.plan(5)
+  t.plan(7)
   const fastify = Fastify()
   const redis = require('redis').createClient({ host: 'localhost', port: 6379 })
 
@@ -100,7 +100,12 @@ test('custom client', t => {
         t.error(err)
         t.equal(val, 'value')
 
-        fastify.close()
+        fastify.close(function (err) {
+          t.error(err)
+          fastify.redis.quit(function (err) {
+            t.error(err)
+          })
+        })
       })
     })
   })
