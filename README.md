@@ -12,7 +12,8 @@ npm i fastify-redis --save
 ```
 ## Usage
 Add it to your project with `register` and you are done!
-You can access the *Redis* client via `fastify.redis`.
+You can access the *Redis* client via `fastify.redis`. The client is
+automatically closed when the fastify instance is closed.
 
 ```js
 const fastify = require('fastify')
@@ -40,7 +41,9 @@ fastify.listen(3000, err => {
 ```
 
 You may also supply an existing *Redis* client instance by passing an options
-object with the `client` property set to the instance.
+object with the `client` property set to the instance. In this case,
+the client is not automatically close when the Fastify instance is
+closed.
 
 ```js
 const fastify = Fastify()
