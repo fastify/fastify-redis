@@ -56,6 +56,69 @@ fastify.register(fastifyRedis, { client: redis })
 // ...
 ```
 
+## Registering multiple Redis client instances
+
+By using the `namespace` option you can register multiple Redis client instances.
+
+
+```js
+const fastify = require('fastify')
+const redis = require('redis').createClient({ host: 'localhost', port: 6379 })
+
+fastify
+  .register(require('fastify-redis'), {
+    host: '127.0.0.1',
+    port: 6380,
+    namespace: 'hello'
+  })
+  .register(require('fastify-redis'), {
+    client: redis,
+    namespace: 'world'
+  })
+
+// Here we will use the `hello` named instance
+fastify.get('/hello', (req, reply) => {
+  const { redis } = fastify
+
+  redis.hello.get(req.query.key, (err, val) => {
+    reply.send(err || val)
+  })
+})
+
+fastify.post('/hello', (req, reply) => {
+  const { redis } = fastify
+
+  redis['hello'].set(req.body.key, req.body.value, (err) => {
+    reply.send(err || { status: 'ok' })
+  })
+})
+
+// Here we will use the `world` named instance
+fastify.get('/world', (req, reply) => {
+  const { redis } = fastify
+
+  redis['world'].get(req.query.key, (err, val) => {
+    reply.send(err || val)
+  })
+})
+
+fastify.post('/world', (req, reply) => {
+  const { redis } = fastify
+
+  redis.world.set(req.body.key, req.body.value, (err) => {
+    reply.send(err || { status: 'ok' })
+  })
+})
+
+fastify.listen(3000, function (err) {
+  if (err) {
+    fastify.log.error(err)
+    process.exit(1)
+  }
+})
+
+```
+
 ## Acknowledgements
 
 This project is kindly sponsored by:
