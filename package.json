@@ -34,5 +34,10 @@
     "fastify-plugin": "^1.5.0",
     "ioredis": "^4.9.0",
     "redis": "^2.8.0"
+  },
+  "greenkeeper": {
+    "ignore": [
+      "tap"
+    ]
   }
 }
