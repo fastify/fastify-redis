@@ -246,3 +246,32 @@ test('Should throw when trying to register multiple instances with different sco
     t.is(err.message, 'A Redis instance has already been registered without a namespace')
   })
 })
+
+test('Should not throw in with different contexts', (t) => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  t.teardown(() => fastify.close())
+
+  fastify.register(function (instance, options, next) {
+    instance.register(fastifyRedis, {
+      host: '127.0.0.1'
+    })
+    next()
+  })
+
+  fastify.register(function (instance, options, next) {
+    instance
+      .register(fastifyRedis, {
+        host: '127.0.0.1',
+        namespace: 'test1'
+      })
+      .register(fastifyRedis, {
+        host: '127.0.0.1',
+        namespace: 'test2'
+      })
+    next()
+  })
+
+  fastify.ready(t.error)
+})
