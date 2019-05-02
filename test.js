@@ -227,26 +227,6 @@ test('Should throw when trying to register multiple instances without giving a n
   })
 })
 
-test('Should throw when trying to register multiple instances with different scopes', (t) => {
-  t.plan(1)
-
-  const fastify = Fastify()
-  t.teardown(() => fastify.close())
-
-  fastify
-    .register(fastifyRedis, {
-      host: '127.0.0.1'
-    })
-    .register(fastifyRedis, {
-      host: '127.0.0.1',
-      namespace: 'test'
-    })
-
-  fastify.ready((err) => {
-    t.is(err.message, 'A Redis instance has already been registered without a namespace')
-  })
-})
-
 test('Should not throw within different contexts', (t) => {
   t.plan(1)
 
@@ -273,5 +253,7 @@ test('Should not throw within different contexts', (t) => {
     next()
   })
 
-  fastify.ready(t.error)
+  fastify.ready((error) => {
+    t.is(error, null)
+  })
 })
