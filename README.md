@@ -60,10 +60,6 @@ fastify.register(fastifyRedis, { client: redis })
 
 By using the `namespace` option you can register multiple Redis client instances.
 
-*NB: When using this feature all your instances must be registered inside of a namespace.
-If you try to register a Redis client instance with a namespace after having registered one without a namespace, then `fastify-redis` will throw an error.*
-
-
 ```js
 const fastify = require('fastify')
 const redis = require('redis').createClient({ host: 'localhost', port: 6379 })
