@@ -14,12 +14,6 @@ function fastifyRedis (fastify, options, next) {
       fastify.decorate('redis', {})
     }
 
-    if (
-      !(fastify.redis && typeof fastify.redis === 'object' && fastify.redis.constructor === Object)
-    ) {
-      return next(new Error('A Redis instance has already been registered without a namespace'))
-    }
-
     if (fastify.redis[namespace]) {
       return next(new Error(`Redis '${namespace}' instance namespace has already been registered`))
     }
