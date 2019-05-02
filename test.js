@@ -247,7 +247,7 @@ test('Should throw when trying to register multiple instances with different sco
   })
 })
 
-test('Should not throw in with different contexts', (t) => {
+test('Should not throw within different contexts', (t) => {
   t.plan(1)
 
   const fastify = Fastify()
