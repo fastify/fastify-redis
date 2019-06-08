@@ -35,7 +35,7 @@ function fastifyRedis (fastify, options, next) {
     fastify.redis[namespace] = client
   } else {
     if (fastify.redis) {
-      return next(new Error('fastify-redis has already been registered'))
+      next(new Error('fastify-redis has already been registered'))
     } else {
       if (!client) {
         try {
