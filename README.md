@@ -16,7 +16,9 @@ You can access the *Redis* client via `fastify.redis`. The client is
 automatically closed when the fastify instance is closed.
 
 ```js
-const fastify = require('fastify')
+'use strict'
+
+const fastify = require('fastify')()
 
 fastify.register(require('fastify-redis'), { host: '127.0.0.1' })
 
@@ -46,7 +48,9 @@ the client is not automatically closed when the Fastify instance is
 closed.
 
 ```js
-const fastify = Fastify()
+'use strict'
+
+const fastify = require('fastify')()
 const redis = require('redis').createClient({ host: 'localhost', port: 6379 })
 
 fastify.register(fastifyRedis, { client: redis })
@@ -61,7 +65,9 @@ fastify.register(fastifyRedis, { client: redis })
 By using the `namespace` option you can register multiple Redis client instances.
 
 ```js
-const fastify = require('fastify')
+'use strict'
+
+const fastify = require('fastify')()
 const redis = require('redis').createClient({ host: 'localhost', port: 6379 })
 
 fastify
@@ -116,6 +122,55 @@ fastify.listen(3000, function (err) {
   }
 })
 
+```
+
+## Redis streams (Redis 5.0 or greater is required)
+
+`fastify-redis` supports Redis streams out of the box.
+
+```js
+'use strict'
+
+const fastify = require('fastify')()
+
+fastify.register(require('fastify-redis'), {
+  host: '127.0.0.1',
+  port: 6380
+})
+
+fastify.get('/streams', async (request, reply) => {
+  // We write an event to the stream 'my awesome fastify stream name', setting 'key' to 'value'
+  await fastify.redis.xadd(['my awesome fastify stream name', '*', 'hello', 'fastify is awesome'])
+
+  // We read events from the beginning of the stream called 'my awesome fastify stream name'
+  let redisStream = await fastify.redis.xread(['STREAMS', 'my awesome fastify stream name', 0])
+
+  // We parse the results
+  let response = []
+  let events = redisStream[0][1]
+
+  for (let i = 0; i < events.length; i++) {
+    const e = events[i]
+    response.push(`#LOG: id is ${e[0].toString()}`)
+
+    // We log each key
+    for (const key in e[1]) {
+      response.push(e[1][key].toString())
+    }
+  }
+
+  reply.status(200)
+  return { output: response }
+  // Will return something like this :
+  // { "output": ["#LOG: id is 1559985742035-0", "hello", "fastify is awesome"] }
+})
+
+fastify.listen(3000, function (err) {
+  if (err) {
+    fastify.log.error(err)
+    process.exit(1)
+  }
+})
 ```
 
 ## Acknowledgements
