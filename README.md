@@ -172,6 +172,7 @@ fastify.listen(3000, function (err) {
   }
 })
 ```
+*NB: you will find more information about Redis streams and the relevant commands [here](https://redis.io/topics/streams-intro) and [here](https://redis.io/commands#stream).*
 
 ## Acknowledgements
 
