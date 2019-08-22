@@ -28,7 +28,7 @@
   "devDependencies": {
     "fastify": "^2.5.0",
     "redis": "^2.8.0",
-    "standard": "^13.0.1",
+    "standard": "^14.0.2",
     "tap": "^12.7.0"
   },
   "dependencies": {
