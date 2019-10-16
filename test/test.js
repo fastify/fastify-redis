@@ -3,7 +3,7 @@
 const t = require('tap')
 const test = t.test
 const Fastify = require('fastify')
-const fastifyRedis = require('./index')
+const fastifyRedis = require('../index')
 
 t.beforeEach((done) => {
   const fastify = Fastify()
