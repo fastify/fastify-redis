@@ -27,7 +27,7 @@
   "homepage": "https://github.com/fastify/fastify-redis#readme",
   "devDependencies": {
     "fastify": "^2.5.0",
-    "redis": "^2.8.0",
+    "redis": "^3.0.0",
     "standard": "^14.0.2",
     "tap": "^12.7.0"
   },
