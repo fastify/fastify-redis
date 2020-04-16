@@ -21,6 +21,8 @@ automatically closed when the fastify instance is closed.
 const fastify = require('fastify')()
 
 fastify.register(require('fastify-redis'), { host: '127.0.0.1' })
+// or
+fastify.register(require('fastify-redis'), { url: 'redis://127.0.0.1', /* other redis options */ })
 
 fastify.get('/foo', (req, reply) => {
   const { redis } = fastify
