@@ -37,6 +37,30 @@ test('fastify.redis should exist', (t) => {
   })
 })
 
+test('fastify.redis should support url', (t) => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.register(fastifyRedis, {
+    url: 'redis://127.0.0.1',
+    otherOption: 'foo'
+  })
+
+  fastify.ready((err) => {
+    t.error(err)
+
+    fastify.redis.set('key', 'value', (err) => {
+      t.error(err)
+      fastify.redis.get('key', (err, val) => {
+        t.error(err)
+        t.equal(val, 'value')
+
+        fastify.close()
+      })
+    })
+  })
+})
+
 test('fastify.redis should be the redis client', (t) => {
   t.plan(4)
   const fastify = Fastify()
