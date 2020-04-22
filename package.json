@@ -3,10 +3,12 @@
   "version": "3.2.0",
   "description": "Plugin to share a common Redis connection across Fastify.",
   "main": "index.js",
+  "types": "index.d.ts",
   "scripts": {
-    "test": "npm run lint && npm run unit",
+    "test": "npm run lint && npm run unit && npm run typescript",
     "lint": "standard",
     "unit": "tap test.js",
+    "typescript": "tsc --project ./test/types/tsconfig.json",
     "redis": "docker run -p 6379:6379 --rm redis:5"
   },
   "repository": {
@@ -28,6 +30,8 @@
   },
   "homepage": "https://github.com/fastify/fastify-redis#readme",
   "devDependencies": {
+    "@types/ioredis": "^4.0.18",
+    "@types/node": "^12.11.1",
     "fastify": "^2.5.0",
     "redis": "^2.8.0",
     "standard": "^14.0.2",
