@@ -225,10 +225,10 @@ test('fastify.redis.test should throw with duplicate connection namespaces', (t)
       host: '127.0.0.1',
       namespace
     })
-    .register(fastifyRedis, {
-      host: '127.0.0.1',
-      namespace
-    })
+  fastify.register(fastifyRedis, {
+    host: '127.0.0.1',
+    namespace
+  })
 
   fastify.ready((err) => {
     t.is(err.message, `Redis '${namespace}' instance namespace has already been registered`)
@@ -245,9 +245,9 @@ test('Should throw when trying to register multiple instances without giving a n
     .register(fastifyRedis, {
       host: '127.0.0.1'
     })
-    .register(fastifyRedis, {
-      host: '127.0.0.1'
-    })
+  fastify.register(fastifyRedis, {
+    host: '127.0.0.1'
+  })
 
   fastify.ready((err) => {
     t.is(err.message, 'fastify-redis has already been registered')
@@ -273,10 +273,10 @@ test('Should not throw within different contexts', (t) => {
         host: '127.0.0.1',
         namespace: 'test1'
       })
-      .register(fastifyRedis, {
-        host: '127.0.0.1',
-        namespace: 'test2'
-      })
+    instance.register(fastifyRedis, {
+      host: '127.0.0.1',
+      namespace: 'test2'
+    })
     next()
   })
 
