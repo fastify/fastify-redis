@@ -48,7 +48,11 @@ function fastifyRedis (fastify, options, next) {
     } else {
       if (!client) {
         try {
-          client = new Redis(options)
+          if (redisUrl) {
+            client = new Redis(redisUrl, options)
+          } else {
+            client = new Redis(options)
+          }
         } catch (err) {
           return next(err)
         }

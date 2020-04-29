@@ -1,9 +1,10 @@
 'use strict'
 
 const t = require('tap')
+const proxyquire = require('proxyquire')
 const test = t.test
 const Fastify = require('fastify')
-const fastifyRedis = require('../index')
+const fastifyRedis = require('..')
 
 t.beforeEach((done) => {
   const fastify = Fastify()
@@ -38,8 +39,19 @@ test('fastify.redis should exist', (t) => {
 })
 
 test('fastify.redis should support url', (t) => {
-  t.plan(4)
+  t.plan(3)
   const fastify = Fastify()
+
+  const fastifyRedis = proxyquire('..', {
+    ioredis: function Redis (path, options) {
+      t.equal(path, 'redis://127.0.0.1')
+      t.deepEqual(options, {
+        otherOption: 'foo'
+      })
+      this.quit = () => {}
+      return this
+    }
+  })
 
   fastify.register(fastifyRedis, {
     url: 'redis://127.0.0.1',
@@ -48,16 +60,7 @@ test('fastify.redis should support url', (t) => {
 
   fastify.ready((err) => {
     t.error(err)
-
-    fastify.redis.set('key', 'value', (err) => {
-      t.error(err)
-      fastify.redis.get('key', (err, val) => {
-        t.error(err)
-        t.equal(val, 'value')
-
-        fastify.close()
-      })
-    })
+    fastify.close()
   })
 })
 
