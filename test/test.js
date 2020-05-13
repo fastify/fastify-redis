@@ -281,6 +281,6 @@ test('Should not throw within different contexts', (t) => {
   })
 
   fastify.ready((error) => {
-    t.is(error, null)
+    t.error(error)
   })
 })
