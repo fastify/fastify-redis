@@ -4,13 +4,7 @@ const fp = require('fastify-plugin')
 const Redis = require('ioredis')
 
 function fastifyRedis (fastify, options, next) {
-  const namespace = options.namespace
-  delete options.namespace
-  let redisUrl
-  if (options.url) {
-    redisUrl = options.url
-    delete options.url
-  }
+  const { namespace, url, ...redisOptions } = options
 
   let client = options.client || null
 
@@ -29,10 +23,10 @@ function fastifyRedis (fastify, options, next) {
 
     if (!client) {
       try {
-        if (redisUrl) {
-          client = new Redis(redisUrl, options)
+        if (url) {
+          client = new Redis(url, redisOptions)
         } else {
-          client = new Redis(options)
+          client = new Redis(redisOptions)
         }
       } catch (err) {
         return next(err)
@@ -48,10 +42,10 @@ function fastifyRedis (fastify, options, next) {
     } else {
       if (!client) {
         try {
-          if (redisUrl) {
-            client = new Redis(redisUrl, options)
+          if (url) {
+            client = new Redis(url, redisOptions)
           } else {
-            client = new Redis(options)
+            client = new Redis(redisOptions)
           }
         } catch (err) {
           return next(err)
