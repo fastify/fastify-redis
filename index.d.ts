@@ -7,7 +7,7 @@ declare module 'fastify' {
   }
 }
 
-export type FastifyRedisPlugin = RedisOptions | { client: Redis }
+export type FastifyRedisPlugin = RedisOptions | { client: Redis } | { url: string }
 
 declare const fastifyRedis: FastifyPlugin<FastifyRedisPlugin>;
 
