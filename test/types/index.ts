@@ -7,6 +7,7 @@ const redis = new IORedis({ host: 'localhost', port: 6379 });
 
 app.register(fastifyRedis, { host: '127.0.0.1' });
 app.register(fastifyRedis, { client: redis });
+app.register(fastifyRedis, { url: 'redis://127.0.0.1:6379', keepAlive: 0 });
 
 app.get('/foo', (req: FastifyRequest, reply) => {
   const { redis } = app;
