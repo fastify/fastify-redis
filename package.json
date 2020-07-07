@@ -1,6 +1,6 @@
 {
   "name": "fastify-redis",
-  "version": "4.0.2",
+  "version": "4.0.3",
   "description": "Plugin to share a common Redis connection across Fastify.",
   "main": "index.js",
   "types": "index.d.ts",
