@@ -40,7 +40,7 @@
     "tsd": "^0.13.1"
   },
   "dependencies": {
-    "fastify-plugin": "^2.0.0",
+    "fastify-plugin": "^3.0.0",
     "ioredis": "^4.10.0"
   },
   "tsd": {
