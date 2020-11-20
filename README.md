@@ -56,10 +56,17 @@ const fastify = require('fastify')()
 const redis = require('redis').createClient({ host: 'localhost', port: 6379 })
 
 fastify.register(require('fastify-redis'), { client: redis })
+```
 
-// ...
-// ...
-// ...
+Note: by default, *fastify-redis* will **not** automatically close the client
+connection when the Fastify server shuts down. To opt-in to this behavior,
+register the client like so:
+
+```js
+fastify.register(require('fastify-redis'), {
+  client: redis,
+  closeClient: true
+})
 ```
 
 ## Registering multiple Redis client instances

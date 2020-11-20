@@ -181,6 +181,37 @@ test('custom client', (t) => {
   })
 })
 
+test('custom client gets closed', (t) => {
+  t.plan(7)
+  const fastify = Fastify()
+  const redis = require('redis').createClient({ host: 'localhost', port: 6379 })
+
+  fastify.register(fastifyRedis, { client: redis, closeClient: true })
+
+  fastify.ready((err) => {
+    t.error(err)
+    t.is(fastify.redis, redis)
+
+    fastify.redis.set('key', 'value', (err) => {
+      t.error(err)
+      fastify.redis.get('key', (err, val) => {
+        t.error(err)
+        t.equal(val, 'value')
+
+        const origQuit = fastify.redis.quit
+        fastify.redis.quit = (cb) => {
+          t.pass('redis client closed')
+          origQuit.call(fastify.redis, cb)
+        }
+
+        fastify.close(function (err) {
+          t.error(err)
+        })
+      })
+    })
+  })
+})
+
 test('custom client inside a namespace', (t) => {
   t.plan(7)
   const fastify = Fastify()
