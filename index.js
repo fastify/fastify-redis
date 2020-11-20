@@ -55,6 +55,9 @@ function fastifyRedis (fastify, options, next) {
       }
 
       fastify.decorate('redis', client)
+      if (options.closeClient === true) {
+        fastify.addHook('onClose', close)
+      }
     }
   }
 
