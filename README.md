@@ -55,7 +55,7 @@ closed.
 const fastify = require('fastify')()
 const redis = require('redis').createClient({ host: 'localhost', port: 6379 })
 
-fastify.register(fastifyRedis, { client: redis })
+fastify.register(require('fastify-redis'), { client: redis })
 
 // ...
 // ...
