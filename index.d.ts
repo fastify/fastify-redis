@@ -1,4 +1,4 @@
-import Fastify, { FastifyPlugin } from 'fastify';
+import { FastifyPluginCallback } from 'fastify';
 import { Redis, RedisOptions } from 'ioredis';
 
 declare module 'fastify' {
@@ -9,6 +9,6 @@ declare module 'fastify' {
 
 export type FastifyRedisPlugin = RedisOptions & { url?: string } | { client: Redis }
 
-declare const fastifyRedis: FastifyPlugin<FastifyRedisPlugin>;
+declare const fastifyRedis: FastifyPluginCallback<FastifyRedisPlugin>;
 
 export default fastifyRedis;
