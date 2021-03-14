@@ -36,6 +36,9 @@ function fastifyRedis (fastify, options, next) {
     }
 
     fastify.redis[namespace] = client
+    if (options.closeClient === true) {
+      fastify.addHook('onClose', closeNamedInstance)
+    }
   } else {
     if (fastify.redis) {
       return next(new Error('fastify-redis has already been registered'))
