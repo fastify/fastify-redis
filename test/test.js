@@ -243,6 +243,41 @@ test('custom client inside a namespace', (t) => {
   })
 })
 
+test('custom client inside a namespace gets closed', (t) => {
+  t.plan(7)
+  const fastify = Fastify()
+  const redis = require('redis').createClient({ host: 'localhost', port: 6379 })
+
+  fastify.register(fastifyRedis, {
+    namespace: 'test',
+    client: redis,
+    closeClient: true
+  })
+
+  fastify.ready((err) => {
+    t.error(err)
+    t.is(fastify.redis.test, redis)
+
+    fastify.redis.test.set('key', 'value', (err) => {
+      t.error(err)
+      fastify.redis.test.get('key', (err, val) => {
+        t.error(err)
+        t.equal(val, 'value')
+
+        const origQuit = fastify.redis.test.quit
+        fastify.redis.test.quit = (cb) => {
+          t.pass('redis client closed')
+          origQuit.call(fastify.redis.test, cb)
+        }
+
+        fastify.close(function (err) {
+          t.error(err)
+        })
+      })
+    })
+  })
+})
+
 test('fastify.redis.test should throw with duplicate connection namespaces', (t) => {
   t.plan(1)
 
