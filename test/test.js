@@ -13,14 +13,9 @@ t.beforeEach(async () => {
     host: '127.0.0.1'
   })
 
-  fastify.ready(async (err) => {
-    t.error(err)
-
-    await fastify.redis.flushall()
-      .then(() => {
-        fastify.close()
-      })
-  })
+  await fastify.ready()
+  await fastify.redis.flushall()
+  await fastify.close()
 })
 
 test('fastify.redis should exist', (t) => {
