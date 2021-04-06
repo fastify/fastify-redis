@@ -6,22 +6,20 @@ const test = t.test
 const Fastify = require('fastify')
 const fastifyRedis = require('..')
 
-t.beforeEach(() => {
-  return new Promise((resolve) => {
-    const fastify = Fastify()
+t.beforeEach(async () => {
+  const fastify = Fastify()
 
-    fastify.register(fastifyRedis, {
-      host: '127.0.0.1'
-    })
+  fastify.register(fastifyRedis, {
+    host: '127.0.0.1'
+  })
 
-    fastify.ready((err) => {
-      t.error(err)
+  fastify.ready(async (err) => {
+    t.error(err)
 
-      fastify.redis.flushall(() => {
+    await fastify.redis.flushall()
+      .then(() => {
         fastify.close()
-        resolve()
       })
-    })
   })
 })
 
