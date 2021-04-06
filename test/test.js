@@ -6,21 +6,16 @@ const test = t.test
 const Fastify = require('fastify')
 const fastifyRedis = require('..')
 
-t.beforeEach((done) => {
+t.beforeEach(async () => {
   const fastify = Fastify()
 
   fastify.register(fastifyRedis, {
     host: '127.0.0.1'
   })
 
-  fastify.ready((err) => {
-    t.error(err)
-
-    fastify.redis.flushall(() => {
-      fastify.close()
-      done()
-    })
-  })
+  await fastify.ready()
+  await fastify.redis.flushall()
+  await fastify.close()
 })
 
 test('fastify.redis should exist', (t) => {
