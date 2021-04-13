@@ -5,7 +5,7 @@
 [![Known Vulnerabilities](https://snyk.io/test/github/fastify/fastify-redis/badge.svg)](https://snyk.io/test/github/fastify/fastify-redis)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](https://standardjs.com/)
 
-Fastify Redis connection plugin, with this you can share the same Redis connection in every part of your server.
+Fastify Redis connection plugin; with this you can share the same Redis connection in every part of your server.
 
 Under the hood [ioredis](https://github.com/luin/ioredis) is used as client, the ``options`` that you pass to `register` will be passed to the Redis client.
 
@@ -184,13 +184,13 @@ fastify.listen(3000, function (err) {
   }
 })
 ```
-*NB: you will find more information about Redis streams and the relevant commands [here](https://redis.io/topics/streams-intro) and [here](https://redis.io/commands#stream).*
+*NB you can find more information about Redis streams and the relevant commands [here](https://redis.io/topics/streams-intro) and [here](https://redis.io/commands#stream).*
 
 ## Acknowledgements
 
 This project is kindly sponsored by:
-- [nearForm](http://nearform.com)
-- [LetzDoIt](http://www.letzdoitapp.com/)
+- [nearForm](https://nearform.com)
+- [LetzDoIt](https://www.letzdoitapp.com/)
 
 ## License
 
