@@ -37,7 +37,7 @@
     "redis": "^3.0.2",
     "standard": "^16.0.0",
     "tap": "^15.0.2",
-    "tsd": "^0.14.0"
+    "tsd": "^0.16.0"
   },
   "dependencies": {
     "fastify-plugin": "^3.0.0",
