@@ -44,6 +44,7 @@ test('fastify.redis should support url', (t) => {
         otherOption: 'foo'
       })
       this.quit = () => {}
+      this.info = cb => cb(null, 'info')
       return this
     }
   })
@@ -343,5 +344,38 @@ test('Should not throw within different contexts', (t) => {
 
   fastify.ready((error) => {
     t.error(error)
+  })
+})
+
+test('Should throw when trying to connect on an invalid host', (t) => {
+  t.plan(1)
+
+  const fastify = Fastify({ pluginTimeout: 20000 })
+  t.teardown(() => fastify.close())
+
+  fastify
+    .register(fastifyRedis, {
+      host: 'invalid_host'
+    })
+
+  fastify.ready((err) => {
+    t.equal(err.message, 'fastify-redis tried to connect to an invalid redis instance')
+  })
+})
+
+test('Should not throw when trying to connect on an invalid host but the lazyConnect option has been provided', (t) => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  t.teardown(() => fastify.close())
+
+  fastify
+    .register(fastifyRedis, {
+      host: 'invalid_host',
+      lazyConnect: true
+    })
+
+  fastify.ready((err) => {
+    t.error(err)
   })
 })
