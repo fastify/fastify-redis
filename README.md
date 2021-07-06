@@ -256,7 +256,7 @@ You can skip the connection check during the registration phase providing the `l
 
 const fastify = require('fastify')()
 
-// lazyConnect option will not estabilish the connection until the first command is issued
+// lazyConnect option will not establish the connection until the first command is issued
 fastify.register(require('fastify-redis'), { host: '127.0.0.1', lazyConnect: true})
 
 fastify.listen(3000, err => {
