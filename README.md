@@ -186,6 +186,86 @@ fastify.listen(3000, function (err) {
 ```
 *NB you can find more information about Redis streams and the relevant commands [here](https://redis.io/topics/streams-intro) and [here](https://redis.io/commands#stream).*
 
+## Redis connection error
+Majority of errors are silent due to the `ioredis` silent error handling but during the plugin registration it will check that the connection with the redis instance is correctly estabilished.
+In this case you can receive an `ERR_AVVIO_PLUGIN_TIMEOUT` error if the connection cant be estabilished in the expected time frame or a dedicated error for an invalid connection.
+
+If you are using the default fastify `pluginTimeout` option and the default `maxRetriesPerRequest` redis option you will probably encounter an `ERR_AVVIO_PLUGIN_TIMEOUT` error:
+```js
+'use strict'
+
+const fastify = require('fastify')()
+const fastifyRedis = require('fastify-redis')
+
+fastify
+  .register(fastifyRedis, {
+    host: 'invalid_host',
+  })
+
+fastify.listen(3000, err => {
+  if (err) throw err
+  console.log(`server listening on ${fastify.server.address().port}`)
+})
+```
+```
+Error: ERR_AVVIO_PLUGIN_TIMEOUT: plugin did not start in time: /fastify-redis/index.js. You may have forgotten to call 'done' function or to resolve a Promise
+    at Timeout._onTimeout (/fastify-redis/node_modules/avvio/plugin.js:123:19)
+    at listOnTimeout (internal/timers.js:549:17)
+    at processTimers (internal/timers.js:492:7) {
+  code: 'ERR_AVVIO_PLUGIN_TIMEOUT',
+  fn: [Function: fastifyRedis] {
+    default: [Circular],
+    fastifyRedis: [Circular],
+    [Symbol(skip-override)]: true,
+    [Symbol(fastify.display-name)]: 'fastify-redis',
+    [Symbol(plugin-meta)]: { fastify: '>=1.x', name: 'fastify-redis' }
+  }
+}
+```
+If you increase the `pluginTimeout` fastify option or decrease the `maxRetriesPerRequest` redis option you will receive a connection error:
+```js
+'use strict'
+
+// you can increase the pluginTimeout option (default is 10000ms)
+const fastify = require('fastify')({pluginTimeout: 15000})
+const fastifyRedis = require('fastify-redis')
+
+fastify
+  .register(fastifyRedis, {
+    host: 'invalid_host',
+    // or you can lower the `maxRetriesPerRequest` aswell (default is 20)
+    maxRetriesPerRequest: 15
+  })
+
+fastify.listen(3000, err => {
+  if (err) throw err
+  console.log(`server listening on ${fastify.server.address().port}`)
+})
+```
+```
+Error: fastify-redis tried to connect to an invalid redis instance
+    at /fastify-redis/index.js:69:25
+    at tryCatcher (/fastify-redis/node_modules/standard-as-callback/built/utils.js:12:23)
+    at fastify-redis/node_modules/standard-as-callback/built/index.js:33:51
+    at processTicksAndRejections (internal/process/task_queues.js:97:5)
+```
+
+You can skip the connection check during the registration phase providing the `lazyConnect` option:
+```js
+'use strict'
+
+const fastify = require('fastify')()
+
+// lazyConnect option will not estabilish the connection until the first command is issued
+fastify.register(require('fastify-redis'), { host: '127.0.0.1', lazyConnect: true})
+
+fastify.listen(3000, err => {
+  if (err) throw err
+  console.log(`server listening on ${fastify.server.address().port}`)
+})
+
+```
+
 ## Acknowledgements
 
 This project is kindly sponsored by:
