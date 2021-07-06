@@ -188,7 +188,7 @@ fastify.listen(3000, function (err) {
 
 ## Redis connection error
 Majority of errors are silent due to the `ioredis` silent error handling but during the plugin registration it will check that the connection with the redis instance is correctly estabilished.
-In this case you can receive an `ERR_AVVIO_PLUGIN_TIMEOUT` error if the connection cant be estabilished in the expected time frame or a dedicated error for an invalid connection.
+In this case you can receive an `ERR_AVVIO_PLUGIN_TIMEOUT` error if the connection can't be estabilished in the expected time frame or a dedicated error for an invalid connection.
 
 If you are using the default fastify `pluginTimeout` option and the default `maxRetriesPerRequest` redis option you will probably encounter an `ERR_AVVIO_PLUGIN_TIMEOUT` error:
 ```js
