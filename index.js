@@ -66,7 +66,7 @@ function fastifyRedis (fastify, options, next) {
 
   if (!redisOptions.lazyConnect) {
     return client.info((err, _) => {
-      return err ? next(new Error('fastify-redis tried to connect to an invalid redis instance')) : next()
+      return err ? next(err) : next()
     })
   } else {
     next()
