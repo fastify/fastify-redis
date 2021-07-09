@@ -6,6 +6,35 @@ const test = t.test
 const Fastify = require('fastify')
 const fastifyRedis = require('..')
 
+const TEST_PASSWORD = 'my_secret_password'
+
+const setRedisPassword = async (password) => {
+  const fastify = Fastify()
+
+  fastify.register(fastifyRedis, {
+    host: '127.0.0.1'
+  })
+
+  await fastify.ready()
+  await fastify.redis.flushall()
+  await fastify.redis.config(['set', 'requirepass', password])
+  await fastify.close()
+}
+
+const unsetRedisPassword = async (currentPassword) => {
+  const fastify = Fastify()
+
+  fastify.register(fastifyRedis, {
+    host: '127.0.0.1',
+    password: currentPassword
+  })
+
+  await fastify.ready()
+  await fastify.redis.flushall()
+  await fastify.redis.config(['set', 'requirepass', ''])
+  await fastify.close()
+}
+
 t.beforeEach(async () => {
   const fastify = Fastify()
 
@@ -44,6 +73,7 @@ test('fastify.redis should support url', (t) => {
         otherOption: 'foo'
       })
       this.quit = () => {}
+      this.info = cb => cb(null, 'info')
       return this
     }
   })
@@ -344,4 +374,81 @@ test('Should not throw within different contexts', (t) => {
   fastify.ready((error) => {
     t.error(error)
   })
+})
+
+test('Should throw when trying to connect on an invalid host', (t) => {
+  t.plan(2)
+
+  const fastify = Fastify({ pluginTimeout: 20000 })
+  t.teardown(() => fastify.close())
+
+  fastify
+    .register(fastifyRedis, {
+      host: 'invalid_host'
+    })
+
+  fastify.ready((err) => {
+    t.type(err, 'MaxRetriesPerRequestError')
+    t.equal(err.message, 'Reached the max retries per request limit (which is 20). Refer to "maxRetriesPerRequest" option for details.')
+  })
+})
+
+test('Should not throw when trying to connect on an invalid host but the lazyConnect option has been provided', (t) => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  t.teardown(() => fastify.close())
+
+  fastify
+    .register(fastifyRedis, {
+      host: 'invalid_host',
+      lazyConnect: true
+    })
+
+  fastify.ready((err) => {
+    t.error(err)
+  })
+})
+
+test('Should throw authentication error when trying to connect on a valid host with a wrong password', (t) => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  t.teardown(async () => {
+    fastify.close()
+    await unsetRedisPassword(TEST_PASSWORD)
+  })
+
+  setRedisPassword(TEST_PASSWORD)
+    .then(_ => {
+      fastify.register(fastifyRedis, {
+        host: '127.0.0.1',
+        password: 'my_wrong_secret_password'
+      })
+
+      fastify.ready(err => {
+        t.ok(err)
+      })
+    })
+})
+
+test('Should throw authentication error when trying to connect on a valid host without a password', (t) => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  t.teardown(async () => {
+    fastify.close()
+    await unsetRedisPassword(TEST_PASSWORD)
+  })
+
+  setRedisPassword(TEST_PASSWORD)
+    .then(_ => {
+      fastify.register(fastifyRedis, {
+        host: '127.0.0.1'
+      })
+
+      fastify.ready(err => {
+        t.ok(err)
+      })
+    })
 })

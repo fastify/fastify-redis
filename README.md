@@ -186,6 +186,10 @@ fastify.listen(3000, function (err) {
 ```
 *NB you can find more information about Redis streams and the relevant commands [here](https://redis.io/topics/streams-intro) and [here](https://redis.io/commands#stream).*
 
+## Redis connection error
+Majority of errors are silent due to the `ioredis` silent error handling but during the plugin registration it will check that the connection with the redis instance is correctly estabilished.
+In this case you can receive an `ERR_AVVIO_PLUGIN_TIMEOUT` error if the connection can't be estabilished in the expected time frame or a dedicated error for an invalid connection.
+
 ## Acknowledgements
 
 This project is kindly sponsored by:
