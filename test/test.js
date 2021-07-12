@@ -74,6 +74,13 @@ test('fastify.redis should support url', (t) => {
       })
       this.quit = () => {}
       this.info = cb => cb(null, 'info')
+      this.on = function (name, handler) {
+        if (name === 'ready') {
+          handler(null, 'ready')
+        }
+
+        return this
+      }
       return this
     }
   })
@@ -377,7 +384,7 @@ test('Should not throw within different contexts', (t) => {
 })
 
 test('Should throw when trying to connect on an invalid host', (t) => {
-  t.plan(2)
+  t.plan(1)
 
   const fastify = Fastify({ pluginTimeout: 20000 })
   t.teardown(() => fastify.close())
@@ -388,8 +395,7 @@ test('Should throw when trying to connect on an invalid host', (t) => {
     })
 
   fastify.ready((err) => {
-    t.type(err, 'MaxRetriesPerRequestError')
-    t.equal(err.message, 'Reached the max retries per request limit (which is 20). Refer to "maxRetriesPerRequest" option for details.')
+    t.ok(err)
   })
 })
 
