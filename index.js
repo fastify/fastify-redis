@@ -65,11 +65,18 @@ function fastifyRedis (fastify, options, next) {
   }
 
   if (!redisOptions.lazyConnect) {
+    const onError = function (err) {
+      client.quit(() => next(err))
+    }
+
+    const onReady = function () {
+      client.off('error', onError)
+      next()
+    }
+
     return client
-      .on('ready', next)
-      .on('error', (err) => {
-        client.quit(() => next(err))
-      })
+      .on('ready', onReady)
+      .on('error', onError)
   }
 
   next()
