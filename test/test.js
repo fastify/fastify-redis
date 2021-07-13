@@ -81,7 +81,7 @@ test('fastify.redis should support url', (t) => {
 
         return this
       }
-      this.off = () => {}
+      this.off = function () { return this }
 
       return this
     }
