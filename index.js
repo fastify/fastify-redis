@@ -90,7 +90,7 @@ function fastifyRedis (fastify, options, next) {
       // Any other errors during startup will
       // trigger the 'end' event.
       if (err instanceof Redis.ReplyError) {
-        this.emit('end', err)
+        onEnd(err)
       }
     }
 
