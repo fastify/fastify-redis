@@ -74,9 +74,11 @@ function fastifyRedis (fastify, options, next) {
       next()
     }
 
-    return client
+    client
       .on('ready', onReady)
       .on('error', onError)
+
+    return
   }
 
   next()
