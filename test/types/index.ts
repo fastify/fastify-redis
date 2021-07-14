@@ -1,6 +1,6 @@
 import Fastify, { FastifyRequest } from 'fastify';
 import fastifyRedis from '../..';
-import * as IORedis from 'ioredis';
+import IORedis from 'ioredis';
 
 const app = Fastify();
 const redis = new IORedis({ host: 'localhost', port: 6379 });

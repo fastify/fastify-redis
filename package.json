@@ -9,7 +9,7 @@
     "redis": "docker run -p 6379:6379 --rm redis:5",
     "test": "npm run lint && npm run unit && npm run typescript",
     "typescript": "tsd",
-    "unit": "tap --no-check-coverage test/test.js"
+    "unit": "tap test/test.js"
   },
   "repository": {
     "type": "git",
@@ -37,7 +37,7 @@
     "redis": "^3.0.2",
     "standard": "^16.0.0",
     "tap": "^15.0.2",
-    "tsd": "^0.14.0"
+    "tsd": "^0.17.0"
   },
   "dependencies": {
     "fastify-plugin": "^3.0.0",

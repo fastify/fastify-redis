@@ -69,7 +69,7 @@ test('fastify.redis should support url', (t) => {
   const fastifyRedis = proxyquire('..', {
     ioredis: function Redis (path, options) {
       t.equal(path, 'redis://127.0.0.1')
-      t.deepEqual(options, {
+      t.same(options, {
         otherOption: 'foo'
       })
       this.quit = () => {}
@@ -196,7 +196,7 @@ test('custom client', (t) => {
 
   fastify.ready((err) => {
     t.error(err)
-    t.is(fastify.redis, redis)
+    t.equal(fastify.redis, redis)
 
     fastify.redis.set('key', 'value', (err) => {
       t.error(err)
@@ -224,7 +224,7 @@ test('custom client gets closed', (t) => {
 
   fastify.ready((err) => {
     t.error(err)
-    t.is(fastify.redis, redis)
+    t.equal(fastify.redis, redis)
 
     fastify.redis.set('key', 'value', (err) => {
       t.error(err)
@@ -258,7 +258,7 @@ test('custom client inside a namespace', (t) => {
 
   fastify.ready((err) => {
     t.error(err)
-    t.is(fastify.redis.test, redis)
+    t.equal(fastify.redis.test, redis)
 
     fastify.redis.test.set('key', 'value', (err) => {
       t.error(err)
@@ -290,7 +290,7 @@ test('custom client inside a namespace gets closed', (t) => {
 
   fastify.ready((err) => {
     t.error(err)
-    t.is(fastify.redis.test, redis)
+    t.equal(fastify.redis.test, redis)
 
     fastify.redis.test.set('key', 'value', (err) => {
       t.error(err)
@@ -331,7 +331,7 @@ test('fastify.redis.test should throw with duplicate connection namespaces', (t)
     })
 
   fastify.ready((err) => {
-    t.is(err.message, `Redis '${namespace}' instance namespace has already been registered`)
+    t.equal(err.message, `Redis '${namespace}' instance namespace has already been registered`)
   })
 })
 
@@ -350,7 +350,7 @@ test('Should throw when trying to register multiple instances without giving a n
     })
 
   fastify.ready((err) => {
-    t.is(err.message, 'fastify-redis has already been registered')
+    t.equal(err.message, 'fastify-redis has already been registered')
   })
 })
 
