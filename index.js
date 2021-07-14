@@ -65,12 +65,44 @@ function fastifyRedis (fastify, options, next) {
   }
 
   if (!redisOptions.lazyConnect) {
-    return client.info((err, _) => {
-      return err ? next(err) : next()
-    })
-  } else {
-    next()
+    const onEnd = function (err) {
+      client
+        .off('ready', onReady)
+        .off('error', onError)
+        .off('end', onEnd)
+        .quit(() => next(err))
+    }
+
+    const onReady = function () {
+      client
+        .off('end', onEnd)
+        .off('error', onError)
+        .off('ready', onReady)
+
+      next()
+    }
+
+    const onError = function (err) {
+      // Swallow network errors to allow ioredis
+      // to preform reconnection and emit 'end'
+      // event if reconnection eventually
+      // fails.
+      // Any other errors during startup will
+      // trigger the 'end' event.
+      if (err instanceof Redis.ReplyError) {
+        onEnd(err)
+      }
+    }
+
+    client
+      .on('end', onEnd)
+      .on('error', onError)
+      .on('ready', onReady)
+
+    return
   }
+
+  next()
 }
 
 function close (fastify, done) {
