@@ -460,3 +460,19 @@ test('Should throw authentication error when trying to connect on a valid host w
       })
     })
 })
+
+test('Should successfully create a Redis client when registered with a `url` option and without a `client` option in a namespaced instance', async t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
+
+  await fastify.register(fastifyRedis, {
+    url: 'redis://127.0.0.1',
+    namespace: 'test'
+  })
+
+  await fastify.ready().catch(err => t.error(err))
+  t.ok(fastify.redis)
+  t.ok(fastify.redis.test)
+})
