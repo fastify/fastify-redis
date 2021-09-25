@@ -13,7 +13,7 @@ declare module 'fastify' {
   }
 }
 
-export type FastifyRedisPluginOptions = (RedisOptions &
+export type FastifyRedisPlugin = (RedisOptions &
 {
   url?: string;
   namespace?: string;
@@ -23,5 +23,5 @@ export type FastifyRedisPluginOptions = (RedisOptions &
   closeClient?: boolean;
 }
 
-declare const fastifyRedis: FastifyPluginCallback<FastifyRedisPluginOptions>;
+declare const fastifyRedis: FastifyPluginCallback<FastifyRedisPlugin>;
 export default fastifyRedis;
