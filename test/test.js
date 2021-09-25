@@ -498,3 +498,36 @@ test('Should be able to register multiple namespaced fastify-redis instances', a
   t.ok(fastify.redis.one)
   t.ok(fastify.redis.two)
 })
+
+test('Should throw when fastify-redis is initialized with an option that makes Redis throw', (t) => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
+
+  // This will throw a `TypeError: this.options.Connector is not a constructor`
+  fastify.register(fastifyRedis, {
+    Connector: 'should_fail'
+  })
+
+  fastify.ready(err => {
+    t.ok(err)
+  })
+})
+
+test('Should throw when fastify-redis is initialized with a namespace and an option that makes Redis throw', (t) => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
+
+  // This will throw a `TypeError: this.options.Connector is not a constructor`
+  fastify.register(fastifyRedis, {
+    Connector: 'should_fail',
+    namespace: 'fail'
+  })
+
+  fastify.ready(err => {
+    t.ok(err)
+  })
+})
