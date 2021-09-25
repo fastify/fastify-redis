@@ -476,3 +476,25 @@ test('Should successfully create a Redis client when registered with a `url` opt
   t.ok(fastify.redis)
   t.ok(fastify.redis.test)
 })
+
+test('Should be able to register multiple namespaced fastify-redis instances', async t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
+
+  await fastify.register(fastifyRedis, {
+    url: 'redis://127.0.0.1',
+    namespace: 'one'
+  })
+
+  await fastify.register(fastifyRedis, {
+    url: 'redis://127.0.0.1',
+    namespace: 'two'
+  })
+
+  await fastify.ready().catch(err => t.error(err))
+  t.ok(fastify.redis)
+  t.ok(fastify.redis.one)
+  t.ok(fastify.redis.two)
+})
