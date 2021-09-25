@@ -472,7 +472,7 @@ test('Should successfully create a Redis client when registered with a `url` opt
     namespace: 'test'
   })
 
-  await fastify.ready().catch(err => t.error(err))
+  await fastify.ready()
   t.ok(fastify.redis)
   t.ok(fastify.redis.test)
 })
