@@ -10,7 +10,9 @@
     "redis": "docker run -p 6379:6379 --rm redis:5",
     "test": "npm run lint && npm run unit && npm run typescript",
     "typescript": "tsd",
-    "unit": "tap test/test.js"
+    "unit": "tap test/test.js",
+    "unit:report": "tap test/test.js --cov --coverage-report=html --coverage-report=cobertura | tee out.tap",
+    "unit:verbose": "tap test/test.js -Rspec"
   },
   "repository": {
     "type": "git",
