@@ -493,7 +493,7 @@ test('Should be able to register multiple namespaced fastify-redis instances', a
     namespace: 'two'
   })
 
-  await fastify.ready().catch(err => t.error(err))
+  await fastify.ready()
   t.ok(fastify.redis)
   t.ok(fastify.redis.one)
   t.ok(fastify.redis.two)
