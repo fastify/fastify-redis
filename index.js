@@ -84,7 +84,7 @@ function fastifyRedis (fastify, options, next) {
 
     const onError = function (err) {
       // Swallow network errors to allow ioredis
-      // to preform reconnection and emit 'end'
+      // to perform reconnection and emit 'end'
       // event if reconnection eventually
       // fails.
       // Any other errors during startup will
