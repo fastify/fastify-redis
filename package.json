@@ -11,7 +11,7 @@
     "test": "npm run lint && npm run unit && npm run typescript",
     "typescript": "tsd",
     "unit": "tap test/test.js",
-    "unit:report": "tap test/test.js --cov --coverage-report=html --coverage-report=cobertura | tee out.tap",
+    "unit:report": "tap test/test.js --cov --coverage-report=html --coverage-report=cobertura",
     "unit:verbose": "tap test/test.js -Rspec"
   },
   "repository": {
