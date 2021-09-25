@@ -10,7 +10,7 @@ function fastifyRedis (fastify, options, next) {
 
   if (namespace) {
     if (!fastify.redis) {
-      fastify.decorate('redis', {})
+      fastify.decorate('redis', Object.create(null))
     }
 
     if (fastify.redis[namespace]) {
