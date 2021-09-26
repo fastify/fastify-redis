@@ -460,3 +460,74 @@ test('Should throw authentication error when trying to connect on a valid host w
       })
     })
 })
+
+test('Should successfully create a Redis client when registered with a `url` option and without a `client` option in a namespaced instance', async t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
+
+  await fastify.register(fastifyRedis, {
+    url: 'redis://127.0.0.1',
+    namespace: 'test'
+  })
+
+  await fastify.ready()
+  t.ok(fastify.redis)
+  t.ok(fastify.redis.test)
+})
+
+test('Should be able to register multiple namespaced fastify-redis instances', async t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
+
+  await fastify.register(fastifyRedis, {
+    url: 'redis://127.0.0.1',
+    namespace: 'one'
+  })
+
+  await fastify.register(fastifyRedis, {
+    url: 'redis://127.0.0.1',
+    namespace: 'two'
+  })
+
+  await fastify.ready()
+  t.ok(fastify.redis)
+  t.ok(fastify.redis.one)
+  t.ok(fastify.redis.two)
+})
+
+test('Should throw when fastify-redis is initialized with an option that makes Redis throw', (t) => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
+
+  // This will throw a `TypeError: this.options.Connector is not a constructor`
+  fastify.register(fastifyRedis, {
+    Connector: 'should_fail'
+  })
+
+  fastify.ready(err => {
+    t.ok(err)
+  })
+})
+
+test('Should throw when fastify-redis is initialized with a namespace and an option that makes Redis throw', (t) => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
+
+  // This will throw a `TypeError: this.options.Connector is not a constructor`
+  fastify.register(fastifyRedis, {
+    Connector: 'should_fail',
+    namespace: 'fail'
+  })
+
+  fastify.ready(err => {
+    t.ok(err)
+  })
+})

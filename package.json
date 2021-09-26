@@ -6,10 +6,13 @@
   "types": "index.d.ts",
   "scripts": {
     "lint": "standard",
+    "lint:fix": "standard --fix",
     "redis": "docker run -p 6379:6379 --rm redis:5",
     "test": "npm run lint && npm run unit && npm run typescript",
     "typescript": "tsd",
-    "unit": "tap test/test.js"
+    "unit": "tap test/test.js",
+    "unit:report": "tap test/test.js --cov --coverage-report=html --coverage-report=cobertura",
+    "unit:verbose": "tap test/test.js -Rspec"
   },
   "repository": {
     "type": "git",
@@ -30,18 +33,18 @@
   },
   "homepage": "https://github.com/fastify/fastify-redis#readme",
   "devDependencies": {
-    "@types/ioredis": "^4.19.3",
-    "@types/node": "^16.0.0",
-    "fastify": "^3.11.0",
+    "@types/ioredis": "^4.27.4",
+    "@types/node": "^16.9.6",
+    "fastify": "^3.21.6",
     "proxyquire": "^2.1.3",
-    "redis": "^3.0.2",
-    "standard": "^16.0.0",
-    "tap": "^15.0.2",
+    "redis": "^3.1.2",
+    "standard": "^16.0.3",
+    "tap": "^15.0.10",
     "tsd": "^0.17.0"
   },
   "dependencies": {
     "fastify-plugin": "^3.0.0",
-    "ioredis": "^4.22.0"
+    "ioredis": "^4.27.9"
   },
   "tsd": {
     "directory": "test/types"

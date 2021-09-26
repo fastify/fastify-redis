@@ -128,3 +128,6 @@ yarn.lock
 # editor files
 .vscode
 .idea
+
+# test tap report
+out.tap
