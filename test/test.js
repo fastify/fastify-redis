@@ -5,6 +5,7 @@ const proxyquire = require('proxyquire')
 const test = t.test
 const Fastify = require('fastify')
 const fastifyRedis = require('..')
+const Promise = require('bluebird')
 
 const TEST_PASSWORD = 'my_secret_password'
 
@@ -530,4 +531,51 @@ test('Should throw when fastify-redis is initialized with a namespace and an opt
   fastify.ready(err => {
     t.ok(err)
   })
+})
+
+test('Should use custom promise library', async t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
+
+  await fastify.register(fastifyRedis, {
+    url: 'redis://127.0.0.1',
+    promise: Promise
+  })
+
+  await fastify.ready()
+  t.ok(fastify.redis)
+
+  await fastify.redis.set('key', 'value')
+  const value = await fastify.redis
+    .get('key')
+    .tap(value => {
+      t.equal(`new-${value}`, 'new-value')
+    })
+  t.equal(value, 'value')
+})
+
+test('Should use custom promise library with namespace', async t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
+
+  await fastify.register(fastifyRedis, {
+    url: 'redis://127.0.0.1',
+    promise: Promise,
+    namespace: 'test'
+  })
+
+  await fastify.ready()
+  t.ok(fastify.redis)
+
+  await fastify.redis.test.set('key', 'value')
+  const value = await fastify.redis.test
+    .get('key')
+    .tap(value => {
+      t.equal(`new-${value}`, 'new-value')
+    })
+  t.equal(value, 'value')
 })

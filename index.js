@@ -7,6 +7,8 @@ function fastifyRedis (fastify, options, next) {
   const { namespace, url, ...redisOptions } = options
 
   let client = options.client || null
+  const promise = options.promise || null
+  delete options.promise
 
   if (namespace) {
     if (!fastify.redis) {
@@ -23,6 +25,9 @@ function fastifyRedis (fastify, options, next) {
 
     if (!client) {
       try {
+        if (promise) {
+          Redis.Promise = promise
+        }
         if (url) {
           client = new Redis(url, redisOptions)
         } else {
@@ -45,6 +50,9 @@ function fastifyRedis (fastify, options, next) {
     } else {
       if (!client) {
         try {
+          if (promise) {
+            Redis.Promise = promise
+          }
           if (url) {
             client = new Redis(url, redisOptions)
           } else {

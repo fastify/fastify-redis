@@ -47,6 +47,17 @@ fastify.listen(3000, err => {
 })
 ```
 
+You can also add extra behavior of promises from [ioredis](https://github.com/luin/ioredis) passing a custom promise library:
+
+```js
+'use strict'
+
+const Promise = require('bluebird')
+fastify.register(require('fastify-redis'), {
+  promise: Promise
+})
+```
+
 You may also supply an existing *Redis* client instance by passing an options
 object with the `client` property set to the instance. In this case,
 the client is not automatically closed when the Fastify instance is
