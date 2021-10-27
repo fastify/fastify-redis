@@ -215,6 +215,87 @@ test('custom client', (t) => {
   })
 })
 
+test('custom ioredis client that is already connected', (t) => {
+  t.plan(10)
+  const fastify = Fastify()
+  const Redis = require('ioredis')
+  const redis = new Redis({ host: 'localhost', port: 6379 })
+
+  // use the client now, so that it is connected and ready
+  redis.set('key', 'value', (err) => {
+    t.error(err)
+    redis.get('key', (err, val) => {
+      t.error(err)
+      t.equal(val, 'value')
+
+      fastify.register(fastifyRedis, {
+        client: redis,
+        lazyConnect: false
+      })
+
+      fastify.ready((err) => {
+        t.error(err)
+        t.equal(fastify.redis, redis)
+
+        fastify.redis.set('key2', 'value2', (err) => {
+          t.error(err)
+          fastify.redis.get('key2', (err, val) => {
+            t.error(err)
+            t.equal(val, 'value2')
+
+            fastify.close(function (err) {
+              t.error(err)
+              fastify.redis.quit(function (err) {
+                t.error(err)
+              })
+            })
+          })
+        })
+      })
+    })
+  })
+})
+
+test('custom redis client that is already connected', (t) => {
+  t.plan(10)
+  const fastify = Fastify()
+  const redis = require('redis').createClient({ host: 'localhost', port: 6379 })
+
+  // use the client now, so that it is connected and ready
+  redis.set('key', 'value', (err) => {
+    t.error(err)
+    redis.get('key', (err, val) => {
+      t.error(err)
+      t.equal(val, 'value')
+
+      fastify.register(fastifyRedis, {
+        client: redis,
+        lazyConnect: false
+      })
+
+      fastify.ready((err) => {
+        t.error(err)
+        t.equal(fastify.redis, redis)
+
+        fastify.redis.set('key2', 'value2', (err) => {
+          t.error(err)
+          fastify.redis.get('key2', (err, val) => {
+            t.error(err)
+            t.equal(val, 'value2')
+
+            fastify.close(function (err) {
+              t.error(err)
+              fastify.redis.quit(function (err) {
+                t.error(err)
+              })
+            })
+          })
+        })
+      })
+    })
+  })
+})
+
 test('custom client gets closed', (t) => {
   t.plan(7)
   const fastify = Fastify()
