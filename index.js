@@ -94,10 +94,19 @@ function fastifyRedis (fastify, options, next) {
       }
     }
 
-    client
-      .on('end', onEnd)
-      .on('error', onError)
-      .on('ready', onReady)
+    // node-redis provides the connection-ready  state in a .ready property,
+    // whereas ioredis provides it in a .status property
+    if (client.ready === true || client.status === 'ready') {
+      // client is already connected, do not register event handlers
+      // call next() directly to avoid ERR_AVVIO_PLUGIN_TIMEOUT
+      next()
+    } else {
+      // ready event can still be emitted
+      client
+        .on('end', onEnd)
+        .on('error', onError)
+        .on('ready', onReady)
+    }
 
     return
   }
