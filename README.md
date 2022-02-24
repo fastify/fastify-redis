@@ -24,8 +24,11 @@ Under the hood [ioredis](https://github.com/luin/ioredis) is used as client, the
 ```js
 const fastify = require('fastify')()
 
-// minimum options
+// create by specifying host
 fastify.register(require('fastify-redis'), { host: '127.0.0.1' })
+
+// OR or by specifying Redis URL
+fastify.register(require('fastify-redis'), { url: 'redis://127.0.0.1', /* other redis options */ })
 
 // OR with more options
 fastify.register(require('fastify-redis'), { 
