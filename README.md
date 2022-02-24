@@ -7,26 +7,42 @@
 
 Fastify Redis connection plugin; with this you can share the same Redis connection in every part of your server.
 
-Under the hood [ioredis](https://github.com/luin/ioredis) is used as client, the ``options`` that you pass to `register` will be passed to the Redis client.
-
 ## Install
+
 ```
 npm i fastify-redis --save
 ```
+
 ## Usage
+
 Add it to your project with `register` and you are done!
-You can access the *Redis* client via `fastify.redis`. The client is
-automatically closed when the fastify instance is closed.
+
+### Create a new Redis Client
+
+Under the hood [ioredis](https://github.com/luin/ioredis) is used as client, the ``options`` that you pass to `register` will be passed to the Redis client.
 
 ```js
-'use strict'
-
 const fastify = require('fastify')()
 
+// minimum options
 fastify.register(require('fastify-redis'), { host: '127.0.0.1' })
-// or
-fastify.register(require('fastify-redis'), { url: 'redis://127.0.0.1', /* other redis options */ })
 
+// OR with more options
+fastify.register(require('fastify-redis'), { 
+  host: '127.0.0.1', 
+  password: '***',
+  port: 6379, // Redis port
+  family: 4   // 4 (IPv4) or 6 (IPv6)
+})
+```
+
+### Accessing the Redis Client
+
+Once you're registered your plugin, you can access the Redis client via `fastify.redis`. 
+
+The client is automatically closed when the fastify instance is closed.
+
+```js
 fastify.get('/foo', (req, reply) => {
   const { redis } = fastify
   redis.get(req.query.key, (err, val) => {
@@ -46,6 +62,8 @@ fastify.listen(3000, err => {
   console.log(`server listening on ${fastify.server.address().port}`)
 })
 ```
+
+### Using an existing Redis client
 
 You may also supply an existing *Redis* client instance by passing an options
 object with the `client` property set to the instance. In this case,
