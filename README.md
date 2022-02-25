@@ -27,7 +27,7 @@ const fastify = require('fastify')()
 // create by specifying host
 fastify.register(require('fastify-redis'), { host: '127.0.0.1' })
 
-// OR or by specifying Redis URL
+// OR by specifying Redis URL
 fastify.register(require('fastify-redis'), { url: 'redis://127.0.0.1', /* other redis options */ })
 
 // OR with more options
@@ -41,7 +41,7 @@ fastify.register(require('fastify-redis'), {
 
 ### Accessing the Redis Client
 
-Once you're registered your plugin, you can access the Redis client via `fastify.redis`. 
+Once you have registered your plugin, you can access the Redis client via `fastify.redis`. 
 
 The client is automatically closed when the fastify instance is closed.
 
