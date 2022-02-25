@@ -46,6 +46,20 @@ Once you have registered your plugin, you can access the Redis client via `fasti
 The client is automatically closed when the fastify instance is closed.
 
 ```js
+'use strict'
+
+const Fastify = require('fastify')
+const fastifyRedis = require('fastify-redis')
+
+const fastify = Fastify({ logger: true })
+
+fastify.register(fastifyRedis, { 
+  host: '127.0.0.1', 
+  password: 'your strong password here',
+  port: 6379, // Redis port
+  family: 4   // 4 (IPv4) or 6 (IPv6)
+})
+
 fastify.get('/foo', (req, reply) => {
   const { redis } = fastify
   redis.get(req.query.key, (err, val) => {
