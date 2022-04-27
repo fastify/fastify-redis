@@ -1,6 +1,6 @@
 {
-  "name": "fastify-redis",
-  "version": "4.3.3",
+  "name": "@fastify/redis",
+  "version": "5.0.0",
   "description": "Plugin to share a common Redis connection across Fastify.",
   "main": "index.js",
   "types": "index.d.ts",
@@ -48,5 +48,8 @@
   },
   "tsd": {
     "directory": "test/types"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
