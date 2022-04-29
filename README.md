@@ -1,7 +1,7 @@
-# fastify-redis
+# @fastify/redis
 
 ![CI](https://github.com/fastify/fastify-redis/workflows/CI/badge.svg)
-[![NPM version](https://img.shields.io/npm/v/fastify-redis.svg?style=flat)](https://www.npmjs.com/package/fastify-redis)
+[![NPM version](https://img.shields.io/npm/v/@fastify/redis.svg?style=flat)](https://www.npmjs.com/package/@fastify/redis)
 [![Known Vulnerabilities](https://snyk.io/test/github/fastify/fastify-redis/badge.svg)](https://snyk.io/test/github/fastify/fastify-redis)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](https://standardjs.com/)
 
@@ -10,7 +10,7 @@ Fastify Redis connection plugin; with this you can share the same Redis connecti
 ## Install
 
 ```
-npm i fastify-redis --save
+npm i @fastify/redis --save
 ```
 
 ## Usage
@@ -25,13 +25,13 @@ Under the hood [ioredis](https://github.com/luin/ioredis) is used as client, the
 const fastify = require('fastify')()
 
 // create by specifying host
-fastify.register(require('fastify-redis'), { host: '127.0.0.1' })
+fastify.register(require('@fastify/redis'), { host: '127.0.0.1' })
 
 // OR by specifying Redis URL
-fastify.register(require('fastify-redis'), { url: 'redis://127.0.0.1', /* other redis options */ })
+fastify.register(require('@fastify/redis'), { url: 'redis://127.0.0.1', /* other redis options */ })
 
 // OR with more options
-fastify.register(require('fastify-redis'), { 
+fastify.register(require('@fastify/redis'), { 
   host: '127.0.0.1', 
   password: '***',
   port: 6379, // Redis port
@@ -49,7 +49,7 @@ The client is automatically closed when the fastify instance is closed.
 'use strict'
 
 const Fastify = require('fastify')
-const fastifyRedis = require('fastify-redis')
+const fastifyRedis = require('@fastify/redis')
 
 const fastify = Fastify({ logger: true })
 
@@ -93,15 +93,15 @@ closed.
 const fastify = require('fastify')()
 const redis = require('redis').createClient({ host: 'localhost', port: 6379 })
 
-fastify.register(require('fastify-redis'), { client: redis })
+fastify.register(require('@fastify/redis'), { client: redis })
 ```
 
-Note: by default, *fastify-redis* will **not** automatically close the client
+Note: by default, *@fastify/redis* will **not** automatically close the client
 connection when the Fastify server shuts down. To opt-in to this behavior,
 register the client like so:
 
 ```js
-fastify.register(require('fastify-redis'), {
+fastify.register(require('@fastify/redis'), {
   client: redis,
   closeClient: true
 })
@@ -118,12 +118,12 @@ const fastify = require('fastify')()
 const redis = require('redis').createClient({ host: 'localhost', port: 6379 })
 
 fastify
-  .register(require('fastify-redis'), {
+  .register(require('@fastify/redis'), {
     host: '127.0.0.1',
     port: 6380,
     namespace: 'hello'
   })
-  .register(require('fastify-redis'), {
+  .register(require('@fastify/redis'), {
     client: redis,
     namespace: 'world'
   })
@@ -173,14 +173,14 @@ fastify.listen(3000, function (err) {
 
 ## Redis streams (Redis 5.0 or greater is required)
 
-`fastify-redis` supports Redis streams out of the box.
+`@fastify/redis` supports Redis streams out of the box.
 
 ```js
 'use strict'
 
 const fastify = require('fastify')()
 
-fastify.register(require('fastify-redis'), {
+fastify.register(require('@fastify/redis'), {
   host: '127.0.0.1',
   port: 6380
 })
