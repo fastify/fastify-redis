@@ -315,7 +315,7 @@ test('Should throw when trying to connect on an invalid host', (t) => {
     })
 
   fastify.ready((err) => {
-    t.ok(err)
+    t.notOk(err)
 
     fastify.redis.on('error', (err) => {
       t.ok(err)
