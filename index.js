@@ -118,8 +118,6 @@ function fastifyRedis (fastify, options, next) {
     }
 
     client.ping()
-
-    return
   } else {
     next()
   }
