@@ -14,13 +14,13 @@ jobs:
     strategy:
       matrix:
         node-version:
-          - 10
-          - 12
           - 14
           - 16
+          - 18
         redis-tag:
           - 5
           - 6
+          - 7
     services:
       redis:
         image: redis:${{ matrix.redis-tag }}
