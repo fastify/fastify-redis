@@ -18,7 +18,10 @@ function fastifyRedis (fastify, options, next) {
     }
 
     const closeNamedInstance = (fastify, done) => {
-      fastify.redis[namespace].quit(done)
+      const p = fastify.redis[namespace].quit(done)
+      if (p && typeof p.then === 'function') {
+        p.then(done, done)
+      }
     }
 
     if (!client) {
@@ -41,7 +44,7 @@ function fastifyRedis (fastify, options, next) {
     }
   } else {
     if (fastify.redis) {
-      return next(new Error('fastify-redis has already been registered'))
+      return next(new Error('@fastify/redis has already been registered'))
     } else {
       if (!client) {
         try {
@@ -64,13 +67,15 @@ function fastifyRedis (fastify, options, next) {
     }
   }
 
-  if (!redisOptions.lazyConnect) {
+  if (redisOptions.lazyConnect) {
     const onEnd = function (err) {
       client
         .off('ready', onReady)
         .off('error', onError)
         .off('end', onEnd)
-        .quit(() => next(err))
+        .quit()
+
+      next(err)
     }
 
     const onReady = function () {
@@ -83,6 +88,11 @@ function fastifyRedis (fastify, options, next) {
     }
 
     const onError = function (err) {
+      if (err.code === 'ENOTFOUND') {
+        onEnd(err)
+        return
+      }
+
       // Swallow network errors to allow ioredis
       // to perform reconnection and emit 'end'
       // event if reconnection eventually
@@ -94,9 +104,8 @@ function fastifyRedis (fastify, options, next) {
       }
     }
 
-    // node-redis provides the connection-ready  state in a .ready property,
-    // whereas ioredis provides it in a .status property
-    if (client.ready === true || client.status === 'ready') {
+    // ioredis provides it in a .status property
+    if (client.status === 'ready') {
       // client is already connected, do not register event handlers
       // call next() directly to avoid ERR_AVVIO_PLUGIN_TIMEOUT
       next()
@@ -108,17 +117,22 @@ function fastifyRedis (fastify, options, next) {
         .on('ready', onReady)
     }
 
-    return
-  }
+    client.ping()
 
-  next()
+    return
+  } else {
+    next()
+  }
 }
 
 function close (fastify, done) {
-  fastify.redis.quit(done)
+  const p = fastify.redis.quit(done)
+  if (p && typeof p.then === 'function') {
+    p.then(done, done)
+  }
 }
 
 module.exports = fp(fastifyRedis, {
-  fastify: '>=1.x',
-  name: 'fastify-redis'
+  fastify: '4.x',
+  name: '@fastify/redis'
 })
