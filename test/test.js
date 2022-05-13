@@ -7,35 +7,6 @@ const test = t.test
 const Fastify = require('fastify')
 const fastifyRedis = require('..')
 
-const TEST_PASSWORD = 'my_secret_password'
-
-const setRedisPassword = async (password) => {
-  const fastify = Fastify()
-
-  fastify.register(fastifyRedis, {
-    host: '127.0.0.1'
-  })
-
-  await fastify.ready()
-  await fastify.redis.flushall()
-  await fastify.redis.config(['set', 'requirepass', password])
-  await fastify.close()
-}
-
-const unsetRedisPassword = async (currentPassword) => {
-  const fastify = Fastify()
-
-  fastify.register(fastifyRedis, {
-    host: '127.0.0.1',
-    password: currentPassword
-  })
-
-  await fastify.ready()
-  await fastify.redis.flushall()
-  await fastify.redis.config(['set', 'requirepass', ''])
-  await fastify.close()
-}
-
 t.beforeEach(async () => {
   const fastify = Fastify()
 
@@ -230,6 +201,47 @@ test('custom ioredis client that is already connected', (t) => {
   })
 })
 
+test('custom ioredis client that is already connected', (t) => {
+  t.plan(10)
+  const fastify = Fastify()
+  const Redis = require('ioredis')
+  const redis = new Redis({ host: 'localhost', port: 6379 })
+
+  // use the client now, so that it is connected and ready
+  redis.set('key', 'value', (err) => {
+    t.error(err)
+    redis.get('key', (err, val) => {
+      t.error(err)
+      t.equal(val, 'value')
+
+      fastify.register(fastifyRedis, {
+        client: redis,
+        namespace: 'foo'
+      })
+
+      fastify.ready((err) => {
+        t.error(err)
+        t.equal(fastify.redis.foo, redis)
+
+        fastify.redis.foo.set('key2', 'value2', (err) => {
+          t.error(err)
+          fastify.redis.foo.get('key2', (err, val) => {
+            t.error(err)
+            t.equal(val, 'value2')
+
+            fastify.close(function (err) {
+              t.error(err)
+              fastify.redis.foo.quit(function (err) {
+                t.error(err)
+              })
+            })
+          })
+        })
+      })
+    })
+  })
+})
+
 test('fastify.redis.test should throw with duplicate connection namespaces', (t) => {
   t.plan(1)
 
@@ -303,8 +315,9 @@ test('Should not throw within different contexts', (t) => {
   })
 })
 
-test('Should throw when trying to connect on an invalid host', (t) => {
-  t.plan(2)
+// Skipped because it makes TAP crash
+test('Should throw when trying to connect on an invalid host', { skip: true }, (t) => {
+  t.plan(1)
 
   const fastify = Fastify({ pluginTimeout: 20000 })
   t.teardown(() => fastify.close())
@@ -315,75 +328,8 @@ test('Should throw when trying to connect on an invalid host', (t) => {
     })
 
   fastify.ready((err) => {
-    t.notOk(err)
-
-    fastify.redis.on('error', (err) => {
-      t.ok(err)
-    })
-  })
-})
-
-// Skip because it makes TAP crash
-test('Should not throw when trying to connect on an invalid host but the lazyConnect option has been provided', { skip: true }, (t) => {
-  t.plan(1)
-
-  const fastify = Fastify()
-  t.teardown(() => fastify.close())
-
-  fastify
-    .register(fastifyRedis, {
-      host: 'invalid_host',
-      lazyConnect: true
-    })
-
-  fastify.ready((err) => {
     t.ok(err)
   })
-})
-
-test('Should throw authentication error when trying to connect on a valid host with a wrong password', { skip: true }, (t) => {
-  t.plan(1)
-
-  const fastify = Fastify()
-  t.teardown(async () => {
-    fastify.close()
-    await unsetRedisPassword(TEST_PASSWORD)
-  })
-
-  setRedisPassword(TEST_PASSWORD)
-    .then(_ => {
-      fastify.register(fastifyRedis, {
-        host: '127.0.0.1',
-        password: 'my_wrong_secret_password',
-        lazyConnect: true
-      })
-
-      fastify.ready(err => {
-        t.ok(err)
-      })
-    })
-})
-
-test('Should throw authentication error when trying to connect on a valid host without a password', { skip: true }, (t) => {
-  t.plan(1)
-
-  const fastify = Fastify()
-  t.teardown(async () => {
-    fastify.close()
-    await unsetRedisPassword(TEST_PASSWORD)
-  })
-
-  setRedisPassword(TEST_PASSWORD)
-    .then(_ => {
-      fastify.register(fastifyRedis, {
-        host: '127.0.0.1',
-        lazyConnect: true
-      })
-
-      fastify.ready(err => {
-        t.ok(err)
-      })
-    })
 })
 
 test('Should successfully create a Redis client when registered with a `url` option and without a `client` option in a namespaced instance', async t => {

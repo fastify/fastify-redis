@@ -17,11 +17,8 @@ function fastifyRedis (fastify, options, next) {
       return next(new Error(`Redis '${namespace}' instance namespace has already been registered`))
     }
 
-    const closeNamedInstance = (fastify, done) => {
-      const p = fastify.redis[namespace].quit(done)
-      if (p && typeof p.then === 'function') {
-        p.then(done, done)
-      }
+    const closeNamedInstance = (fastify) => {
+      return fastify.redis[namespace].quit()
     }
 
     if (!client) {
@@ -39,9 +36,6 @@ function fastifyRedis (fastify, options, next) {
     }
 
     fastify.redis[namespace] = client
-    if (options.closeClient === true) {
-      fastify.addHook('onClose', closeNamedInstance)
-    }
   } else {
     if (fastify.redis) {
       return next(new Error('@fastify/redis has already been registered'))
@@ -61,73 +55,67 @@ function fastifyRedis (fastify, options, next) {
       }
 
       fastify.decorate('redis', client)
-      if (options.closeClient === true) {
-        fastify.addHook('onClose', close)
-      }
     }
   }
 
-  if (redisOptions.lazyConnect) {
-    const onEnd = function (err) {
-      client
-        .off('ready', onReady)
-        .off('error', onError)
-        .off('end', onEnd)
-        .quit()
+  // Testing this make the process crash on latest TAP :(
+  /* istanbul ignore next */
+  const onEnd = function (err) {
+    client
+      .off('ready', onReady)
+      .off('error', onError)
+      .off('end', onEnd)
+      .quit()
 
-      next(err)
+    next(err)
+  }
+
+  const onReady = function () {
+    client
+      .off('end', onEnd)
+      .off('error', onError)
+      .off('ready', onReady)
+
+    next()
+  }
+
+  // Testing this make the process crash on latest TAP :(
+  /* istanbul ignore next */
+  const onError = function (err) {
+    if (err.code === 'ENOTFOUND') {
+      onEnd(err)
+      return
     }
 
-    const onReady = function () {
-      client
-        .off('end', onEnd)
-        .off('error', onError)
-        .off('ready', onReady)
-
-      next()
+    // Swallow network errors to allow ioredis
+    // to perform reconnection and emit 'end'
+    // event if reconnection eventually
+    // fails.
+    // Any other errors during startup will
+    // trigger the 'end' event.
+    if (err instanceof Redis.ReplyError) {
+      onEnd(err)
     }
+  }
 
-    const onError = function (err) {
-      if (err.code === 'ENOTFOUND') {
-        onEnd(err)
-        return
-      }
-
-      // Swallow network errors to allow ioredis
-      // to perform reconnection and emit 'end'
-      // event if reconnection eventually
-      // fails.
-      // Any other errors during startup will
-      // trigger the 'end' event.
-      if (err instanceof Redis.ReplyError) {
-        onEnd(err)
-      }
-    }
-
-    // ioredis provides it in a .status property
-    if (client.status === 'ready') {
-      // client is already connected, do not register event handlers
-      // call next() directly to avoid ERR_AVVIO_PLUGIN_TIMEOUT
-      next()
-    } else {
-      // ready event can still be emitted
-      client
-        .on('end', onEnd)
-        .on('error', onError)
-        .on('ready', onReady)
-    }
+  // ioredis provides it in a .status property
+  if (client.status === 'ready') {
+    // client is already connected, do not register event handlers
+    // call next() directly to avoid ERR_AVVIO_PLUGIN_TIMEOUT
+    next()
+  } else {
+    // ready event can still be emitted
+    client
+      .on('end', onEnd)
+      .on('error', onError)
+      .on('ready', onReady)
 
     client.ping()
-  } else {
-    next()
   }
 }
 
-function close (fastify, done) {
-  const p = fastify.redis.quit(done)
-  if (p && typeof p.then === 'function') {
-    p.then(done, done)
-  }
+function close (fastify) {
+  return fastify.redis.quit()
 }
 
 module.exports = fp(fastifyRedis, {
