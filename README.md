@@ -91,21 +91,15 @@ closed.
 'use strict'
 
 const fastify = require('fastify')()
-const redis = require('redis').createClient({ host: 'localhost', port: 6379 })
+const Redis = require('ioredis')
 
-fastify.register(require('@fastify/redis'), { client: redis })
+const client = new Redis({ host: 'localhost', port: 6379 })
+
+fastify.register(require('@fastify/redis'), { client })
 ```
 
 Note: by default, *@fastify/redis* will **not** automatically close the client
-connection when the Fastify server shuts down. To opt-in to this behavior,
-register the client like so:
-
-```js
-fastify.register(require('@fastify/redis'), {
-  client: redis,
-  closeClient: true
-})
-```
+connection when the Fastify server shuts down.
 
 ## Registering multiple Redis client instances
 
@@ -115,7 +109,6 @@ By using the `namespace` option you can register multiple Redis client instances
 'use strict'
 
 const fastify = require('fastify')()
-const redis = require('redis').createClient({ host: 'localhost', port: 6379 })
 
 fastify
   .register(require('@fastify/redis'), {
