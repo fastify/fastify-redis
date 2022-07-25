@@ -9,7 +9,7 @@ Fastify Redis connection plugin; with this you can share the same Redis connecti
 ## Install
 
 ```
-npm i @fastify/redis --save
+npm i @fastify/redis
 ```
 
 ## Usage
