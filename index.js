@@ -56,6 +56,7 @@ function fastifyRedis (fastify, options, next) {
 
       fastify.decorate('redis', client)
     }
+    next()
   }
 
   // Testing this make the process crash on latest TAP :(
