@@ -73,7 +73,7 @@ fastify.post('/foo', (req, reply) => {
   })
 })
 
-fastify.listen(3000, err => {
+fastify.listen({ port: 3000 }, err => {
   if (err) throw err
   console.log(`server listening on ${fastify.server.address().port}`)
 })
@@ -154,7 +154,7 @@ fastify.post('/world', (req, reply) => {
   })
 })
 
-fastify.listen(3000, function (err) {
+fastify.listen({ port: 3000 }, function (err) {
   if (err) {
     fastify.log.error(err)
     process.exit(1)
@@ -204,7 +204,7 @@ fastify.get('/streams', async (request, reply) => {
   // { "output": ["#LOG: id is 1559985742035-0", "hello", "fastify is awesome"] }
 })
 
-fastify.listen(3000, function (err) {
+fastify.listen({ port: 3000 }, function (err) {
   if (err) {
     fastify.log.error(err)
     process.exit(1)
