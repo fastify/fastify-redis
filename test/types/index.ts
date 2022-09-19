@@ -15,7 +15,6 @@ app.register(fastifyRedis, {
 })
 
 app.register(fastifyRedis, {
-  keepAlive: 0,
   namespace: 'two',
   url: 'redis://127.0.0.1:6379'
 })
