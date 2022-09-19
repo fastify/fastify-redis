@@ -1,7 +1,7 @@
 import Fastify, { FastifyInstance } from 'fastify'
 import IORedis, { Redis } from 'ioredis'
 import { expectAssignable, expectError, expectType } from 'tsd'
-import fastifyRedis, { FastifyRedis, FastifyRedisNamespacedInstance } from '../..'
+import fastifyRedis, { FastifyRedis, FastifyRedisNamespacedInstance } from '..'
 
 const app: FastifyInstance = Fastify()
 const redis: Redis = new IORedis({ host: 'localhost', port: 6379 })
