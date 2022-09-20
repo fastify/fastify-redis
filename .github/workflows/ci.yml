@@ -14,5 +14,6 @@ jobs:
   test:
     uses: fastify/workflows/.github/workflows/plugins-ci-redis.yml@v3
     with:
+      lint: true
       license-check: true
       license-check-allowed-additional: 'Apache*'

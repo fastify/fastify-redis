@@ -4,3 +4,6 @@ flow: false
 jobs: 1
 coverage: true
 check-coverage: true
+
+files:
+  - test/**/*.test.js
