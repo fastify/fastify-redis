@@ -1,5 +1,5 @@
 import { FastifyPluginCallback } from 'fastify';
-import { Redis, RedisOptions } from 'ioredis';
+import { Cluster, Redis, RedisOptions } from 'ioredis';
 
 export interface FastifyRedisNamespacedInstance {
   [namespace: string]: Redis;
@@ -18,7 +18,7 @@ export type FastifyRedisPluginOptions = (RedisOptions &
   url?: string;
   namespace?: string;
 }) | {
-  client: Redis;
+  client: Redis | Cluster;
   namespace?: string;
   closeClient?: boolean;
 }
