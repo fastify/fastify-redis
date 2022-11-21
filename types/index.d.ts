@@ -1,11 +1,11 @@
 import { FastifyPluginCallback } from 'fastify';
 import { Cluster, Redis, RedisOptions } from 'ioredis';
 
-type FastifyRedis = FastifyPluginCallback<fastifyRedis.FastifyRedisPluginOptions>
+type FastifyRedisPlugin = FastifyPluginCallback<fastifyRedis.FastifyRedisPluginOptions>
 
 declare module 'fastify' {
   interface FastifyInstance {
-    redis: fastifyRedis.FastifyRedisInstance;
+    redis: fastifyRedis.FastifyRedis;
   }
 }
 
@@ -15,7 +15,7 @@ declare namespace fastifyRedis {
     [namespace: string]: Redis;
   }
   
-  export type FastifyRedisInstance = FastifyRedisNamespacedInstance & Redis;
+  export type FastifyRedis = FastifyRedisNamespacedInstance & Redis;
   
   export type FastifyRedisPluginOptions = (RedisOptions &
   {
@@ -28,9 +28,9 @@ declare namespace fastifyRedis {
   }
 
 
-  export const fastifyRedis: FastifyRedis
+  export const fastifyRedis: FastifyRedisPlugin
   export { fastifyRedis as default }
 }
 
-declare function fastifyRedis(...params: Parameters<FastifyRedis>): ReturnType<FastifyRedis>
+declare function fastifyRedis(...params: Parameters<FastifyRedisPlugin>): ReturnType<FastifyRedisPlugin>
 export = fastifyRedis
