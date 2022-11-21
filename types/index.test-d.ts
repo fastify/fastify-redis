@@ -1,7 +1,7 @@
 import Fastify, { FastifyInstance } from 'fastify'
 import IORedis, { Redis } from 'ioredis'
 import { expectAssignable, expectError, expectType } from 'tsd'
-import fastifyRedis, { FastifyRedis, FastifyRedisNamespacedInstance, FastifyRedisPluginOptions } from '..'
+import fastifyRedis, { FastifyRedisInstance, FastifyRedisNamespacedInstance, FastifyRedisPluginOptions } from '..'
 
 const app: FastifyInstance = Fastify()
 const redis: Redis = new IORedis({ host: 'localhost', port: 6379 })
@@ -32,7 +32,7 @@ expectError(app.register(fastifyRedis, {
 // Plugin property available
 app.after(() => {
   expectAssignable<Redis>(app.redis)
-  expectType<FastifyRedis>(app.redis)
+  expectType<FastifyRedisInstance>(app.redis)
 
   expectAssignable<FastifyRedisNamespacedInstance>(app.redis)
   expectType<Redis>(app.redis.one)
