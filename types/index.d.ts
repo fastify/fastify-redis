@@ -1,7 +1,7 @@
 import { FastifyPluginCallback } from 'fastify';
 import { Cluster, Redis, RedisOptions } from 'ioredis';
 
-type FastifyRedisPlugin = FastifyPluginCallback<fastifyRedis.FastifyRedisPluginOptions>
+type FastifyRedisPluginType = FastifyPluginCallback<fastifyRedis.FastifyRedisPluginOptions>
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -26,11 +26,13 @@ declare namespace fastifyRedis {
     namespace?: string;
     closeClient?: boolean;
   }
-
-
-  export const fastifyRedis: FastifyRedisPlugin
+  /*
+   * @deprecated Use `FastifyRedisPluginOptions` instead
+   */
+  export type FastifyRedisPlugin = FastifyRedisPluginOptions;
+  export const fastifyRedis: FastifyRedisPluginType
   export { fastifyRedis as default }
 }
 
-declare function fastifyRedis(...params: Parameters<FastifyRedisPlugin>): ReturnType<FastifyRedisPlugin>
+declare function fastifyRedis(...params: Parameters<FastifyRedisPluginType>): ReturnType<FastifyRedisPluginType>
 export = fastifyRedis
