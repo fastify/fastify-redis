@@ -122,3 +122,5 @@ module.exports = fp(fastifyRedis, {
   fastify: '4.x',
   name: '@fastify/redis'
 })
+module.exports.default = fastifyRedis
+module.exports.fastifyRedis = fastifyRedis
