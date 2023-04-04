@@ -100,6 +100,12 @@ fastify.register(require('@fastify/redis'), { client })
 Note: by default, *@fastify/redis* will **not** automatically close the client
 connection when the Fastify server shuts down.
 
+To automatically close client connections, set clientClose to true.
+
+```js
+fastify.register(require('@fastify/redis'), { client, closeClient: true })
+```
+
 ## Registering multiple Redis client instances
 
 By using the `namespace` option you can register multiple Redis client instances.

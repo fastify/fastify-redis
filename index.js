@@ -4,7 +4,7 @@ const fp = require('fastify-plugin')
 const Redis = require('ioredis')
 
 function fastifyRedis (fastify, options, next) {
-  const { namespace, url, ...redisOptions } = options
+  const { namespace, url, closeClient = false, ...redisOptions } = options
 
   let client = options.client || null
 
@@ -21,7 +21,11 @@ function fastifyRedis (fastify, options, next) {
       return fastify.redis[namespace].quit()
     }
 
-    if (!client) {
+    if (client) {
+      if (closeClient === true) {
+        fastify.addHook('onClose', closeNamedInstance)
+      }
+    } else {
       try {
         if (url) {
           client = new Redis(url, redisOptions)
@@ -40,7 +44,11 @@ function fastifyRedis (fastify, options, next) {
     if (fastify.redis) {
       return next(new Error('@fastify/redis has already been registered'))
     } else {
-      if (!client) {
+      if (client) {
+        if (closeClient === true) {
+          fastify.addHook('onClose', close)
+        }
+      } else {
         try {
           if (url) {
             client = new Redis(url, redisOptions)
