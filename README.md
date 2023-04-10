@@ -100,7 +100,7 @@ fastify.register(require('@fastify/redis'), { client })
 Note: by default, *@fastify/redis* will **not** automatically close the client
 connection when the Fastify server shuts down.
 
-To automatically close client connections, set clientClose to true.
+To automatically close the client connection, set clientClose to true.
 
 ```js
 fastify.register(require('@fastify/redis'), { client, closeClient: true })
