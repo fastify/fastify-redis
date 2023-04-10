@@ -24,6 +24,9 @@ declare namespace fastifyRedis {
   }) | {
     client: Redis | Cluster;
     namespace?: string;
+    /**
+     * @default false
+     */
     closeClient?: boolean;
   }
   /*

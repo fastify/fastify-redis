@@ -242,6 +242,93 @@ test('custom ioredis client that is already connected', (t) => {
   })
 })
 
+test('If closeClient is enabled, close the client.', (t) => {
+  t.plan(10)
+  const fastify = Fastify()
+  const Redis = require('ioredis')
+  const redis = new Redis({ host: 'localhost', port: 6379 })
+
+  redis.set('key', 'value', (err) => {
+    t.error(err)
+    redis.get('key', (err, val) => {
+      t.error(err)
+      t.equal(val, 'value')
+
+      fastify.register(fastifyRedis, {
+        client: redis,
+        closeClient: true
+      })
+
+      fastify.ready((err) => {
+        t.error(err)
+        t.equal(fastify.redis, redis)
+
+        fastify.redis.set('key2', 'value2', (err) => {
+          t.error(err)
+          fastify.redis.get('key2', (err, val) => {
+            t.error(err)
+            t.equal(val, 'value2')
+
+            const originalQuit = fastify.redis.quit
+            fastify.redis.quit = (callback) => {
+              t.pass('redis client closed')
+              originalQuit.call(fastify.redis, callback)
+            }
+
+            fastify.close(function (err) {
+              t.error(err)
+            })
+          })
+        })
+      })
+    })
+  })
+})
+
+test('If closeClient is enabled, close the client namespace.', (t) => {
+  t.plan(10)
+  const fastify = Fastify()
+  const Redis = require('ioredis')
+  const redis = new Redis({ host: 'localhost', port: 6379 })
+
+  redis.set('key', 'value', (err) => {
+    t.error(err)
+    redis.get('key', (err, val) => {
+      t.error(err)
+      t.equal(val, 'value')
+
+      fastify.register(fastifyRedis, {
+        client: redis,
+        namespace: 'foo',
+        closeClient: true
+      })
+
+      fastify.ready((err) => {
+        t.error(err)
+        t.equal(fastify.redis.foo, redis)
+
+        fastify.redis.foo.set('key2', 'value2', (err) => {
+          t.error(err)
+          fastify.redis.foo.get('key2', (err, val) => {
+            t.error(err)
+            t.equal(val, 'value2')
+
+            const originalQuit = fastify.redis.foo.quit
+            fastify.redis.foo.quit = (callback) => {
+              t.pass('redis client closed')
+              originalQuit.call(fastify.redis.foo, callback)
+            }
+
+            fastify.close(function (err) {
+              t.error(err)
+            })
+          })
+        })
+      })
+    })
+  })
+})
+
 test('fastify.redis.test should throw with duplicate connection namespaces', (t) => {
   t.plan(1)
 
