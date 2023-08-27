@@ -32,11 +32,16 @@ expectError(app.register(fastifyRedis, {
 // Plugin property available
 app.after(() => {
   expectAssignable<Redis>(app.redis)
+  expectAssignable<Redis>(app.dragonfly)
   expectType<FastifyRedis>(app.redis)
+  expectType<FastifyRedis>(app.dragonfly)
 
   expectAssignable<FastifyRedisNamespacedInstance>(app.redis)
   expectType<Redis>(app.redis.one)
   expectType<Redis>(app.redis.two)
+  expectAssignable<FastifyRedisNamespacedInstance>(app.dragonfly)
+  expectType<Redis>(app.dragonfly.one)
+  expectType<Redis>(app.dragonfly.two)
 })
 
 expectDeprecated({} as FastifyRedisPlugin)

@@ -6,6 +6,7 @@ type FastifyRedisPluginType = FastifyPluginCallback<fastifyRedis.FastifyRedisPlu
 declare module 'fastify' {
   interface FastifyInstance {
     redis: fastifyRedis.FastifyRedis;
+    dragonfly: fastifyRedis.FastifyRedis;
   }
 }
 
@@ -14,9 +15,9 @@ declare namespace fastifyRedis {
   export interface FastifyRedisNamespacedInstance {
     [namespace: string]: Redis;
   }
-  
+
   export type FastifyRedis = FastifyRedisNamespacedInstance & Redis;
-  
+
   export type FastifyRedisPluginOptions = (RedisOptions &
   {
     url?: string;
@@ -28,6 +29,10 @@ declare namespace fastifyRedis {
      * @default false
      */
     closeClient?: boolean;
+    /**
+     * @default false
+     */
+    isDragonfly?: boolean;
   }
   /*
    * @deprecated Use `FastifyRedisPluginOptions` instead
