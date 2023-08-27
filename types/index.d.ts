@@ -18,17 +18,17 @@ declare namespace fastifyRedis {
 
   export type FastifyRedis = FastifyRedisNamespacedInstance & Redis;
 
-  export type FastifyRedisPluginOptions = (RedisOptions &
+  export type FastifyRedisPluginOptions = ((RedisOptions &
   {
     url?: string;
-    namespace?: string;
   }) | {
     client: Redis | Cluster;
-    namespace?: string;
     /**
      * @default false
      */
     closeClient?: boolean;
+  }) & {
+    namespace?: string;
     /**
      * @default false
      */
