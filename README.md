@@ -16,7 +16,7 @@ npm i @fastify/redis
 
 Add it to your project with `register` and you are done!
 
-### Create a new Redis Client
+### Create a new Redis/Dragonfly Client
 
 Under the hood [ioredis](https://github.com/luin/ioredis) is used as client, the ``options`` that you pass to `register` will be passed to the Redis client.
 
@@ -69,6 +69,48 @@ fastify.get('/foo', (req, reply) => {
 fastify.post('/foo', (req, reply) => {
   const { redis } = fastify
   redis.set(req.body.key, req.body.value, (err) => {
+    reply.send(err || { status: 'ok' })
+  })
+})
+
+fastify.listen({ port: 3000 }, err => {
+  if (err) throw err
+  console.log(`server listening on ${fastify.server.address().port}`)
+})
+```
+
+### Accessing the Dragonfly Client
+
+Once you have registered your plugin, you can access the Redis client via `fastify.dragonfly`. 
+
+The client is automatically closed when the fastify instance is closed.
+
+```js
+'use strict'
+
+const Fastify = require('fastify')
+const fastifyRedis = require('@fastify/redis')
+
+const fastify = Fastify({ logger: true })
+
+fastify.register(fastifyRedis, { 
+  host: '127.0.0.1', 
+  password: 'your strong password here',
+  port: 6379, // Dragonfly port
+  family: 4   // 4 (IPv4) or 6 (IPv6),
+  isDragonfly: true
+})
+
+fastify.get('/foo', (req, reply) => {
+  const { dragonfly } = fastify
+  dragonfly.get(req.query.key, (err, val) => {
+    reply.send(err || val)
+  })
+})
+
+fastify.post('/foo', (req, reply) => {
+  const { dragonfly } = fastify
+  dragonfly.set(req.body.key, req.body.value, (err) => {
     reply.send(err || { status: 'ok' })
   })
 })
