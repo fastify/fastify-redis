@@ -366,7 +366,7 @@ decoratorNames.forEach(decoratorName => {
       })
 
     fastify.ready((err) => {
-      t.equal(err.message, `Redis '${namespace}' instance namespace has already been registered`)
+      t.equal(err.message, `${decoratorName} '${namespace}' instance namespace has already been registered`)
     })
   })
 
