@@ -81,7 +81,7 @@ fastify.listen({ port: 3000 }, err => {
 
 ### Accessing the Dragonfly Client
 
-Once you have registered your plugin, you can access the Redis client via `fastify.dragonfly`. 
+Once you have registered your plugin, you can access the Dragonfly client via `fastify.dragonfly`. 
 
 The client is automatically closed when the fastify instance is closed.
 
