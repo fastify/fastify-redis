@@ -4,21 +4,23 @@ const fp = require('fastify-plugin')
 const Redis = require('ioredis')
 
 function fastifyRedis (fastify, options, next) {
-  const { namespace, url, closeClient = false, ...redisOptions } = options
+  const { namespace, url, closeClient = false, isDragonfly = false, ...redisOptions } = options
+
+  const decoratorName = isDragonfly ? 'dragonfly' : 'redis'
 
   let client = options.client || null
 
   if (namespace) {
-    if (!fastify.redis) {
-      fastify.decorate('redis', Object.create(null))
+    if (!fastify[decoratorName]) {
+      fastify.decorate(decoratorName, Object.create(null))
     }
 
-    if (fastify.redis[namespace]) {
-      return next(new Error(`Redis '${namespace}' instance namespace has already been registered`))
+    if (fastify[decoratorName][namespace]) {
+      return next(new Error(`${decoratorName} '${namespace}' instance namespace has already been registered`))
     }
 
     const closeNamedInstance = (fastify) => {
-      return fastify.redis[namespace].quit()
+      return fastify[decoratorName][namespace].quit()
     }
 
     if (client) {
@@ -39,14 +41,14 @@ function fastifyRedis (fastify, options, next) {
       fastify.addHook('onClose', closeNamedInstance)
     }
 
-    fastify.redis[namespace] = client
+    fastify[decoratorName][namespace] = client
   } else {
-    if (fastify.redis) {
+    if (fastify[decoratorName]) {
       return next(new Error('@fastify/redis has already been registered'))
     } else {
       if (client) {
         if (closeClient === true) {
-          fastify.addHook('onClose', close)
+          fastify.addHook('onClose', close(decoratorName))
         }
       } else {
         try {
@@ -59,10 +61,10 @@ function fastifyRedis (fastify, options, next) {
           return next(err)
         }
 
-        fastify.addHook('onClose', close)
+        fastify.addHook('onClose', close(decoratorName))
       }
 
-      fastify.decorate('redis', client)
+      fastify.decorate(decoratorName, client)
     }
   }
 
@@ -122,8 +124,10 @@ function fastifyRedis (fastify, options, next) {
   }
 }
 
-function close (fastify) {
-  return fastify.redis.quit()
+function close (decoratorName) {
+  return function (fastify) {
+    return fastify[decoratorName].quit()
+  }
 }
 
 module.exports = fp(fastifyRedis, {
