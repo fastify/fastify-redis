@@ -10,11 +10,14 @@ const fastifyRedis = require('..')
 const decoratorNames = ['redis', 'dragonfly']
 
 decoratorNames.forEach(decoratorName => {
+  const isDragonfly = decoratorName === 'dragonfly'
+
   t.beforeEach(async () => {
     const fastify = Fastify()
 
     fastify.register(fastifyRedis, {
-      host: '127.0.0.1'
+      host: '127.0.0.1',
+      isDragonfly
     })
 
     await fastify.ready()
@@ -26,7 +29,8 @@ decoratorNames.forEach(decoratorName => {
     t.plan(2)
     const fastify = Fastify()
     fastify.register(fastifyRedis, {
-      host: '127.0.0.1'
+      host: '127.0.0.1',
+      isDragonfly
     })
 
     fastify.ready((err) => {
@@ -65,7 +69,8 @@ decoratorNames.forEach(decoratorName => {
 
     fastify.register(fastifyRedis, {
       url: 'redis://127.0.0.1',
-      otherOption: 'foo'
+      otherOption: 'foo',
+      isDragonfly
     })
 
     fastify.ready((err) => {
@@ -79,7 +84,8 @@ decoratorNames.forEach(decoratorName => {
     const fastify = Fastify()
 
     fastify.register(fastifyRedis, {
-      host: '127.0.0.1'
+      host: '127.0.0.1',
+      isDragonfly
     })
 
     fastify.ready((err) => {
@@ -103,7 +109,8 @@ decoratorNames.forEach(decoratorName => {
     const fastify = Fastify()
     fastify.register(fastifyRedis, {
       host: '127.0.0.1',
-      namespace: 'test'
+      namespace: 'test',
+      isDragonfly
     })
 
     fastify.ready((err) => {
@@ -121,7 +128,8 @@ decoratorNames.forEach(decoratorName => {
 
     fastify.register(fastifyRedis, {
       host: '127.0.0.1',
-      namespace: 'test'
+      namespace: 'test',
+      isDragonfly
     })
 
     fastify.ready((err) => {
@@ -144,7 +152,8 @@ decoratorNames.forEach(decoratorName => {
     const fastify = Fastify()
 
     fastify.register(fastifyRedis, {
-      host: '127.0.0.1'
+      host: '127.0.0.1',
+      isDragonfly
     })
 
     fastify.ready((err) => {
@@ -178,7 +187,8 @@ decoratorNames.forEach(decoratorName => {
 
         fastify.register(fastifyRedis, {
           client: redis,
-          lazyConnect: false
+          lazyConnect: false,
+          isDragonfly
         })
 
         fastify.ready((err) => {
@@ -219,7 +229,8 @@ decoratorNames.forEach(decoratorName => {
 
         fastify.register(fastifyRedis, {
           client: redis,
-          namespace: 'foo'
+          namespace: 'foo',
+          isDragonfly
         })
 
         fastify.ready((err) => {
@@ -259,7 +270,8 @@ decoratorNames.forEach(decoratorName => {
 
         fastify.register(fastifyRedis, {
           client: redis,
-          closeClient: true
+          closeClient: true,
+          isDragonfly
         })
 
         fastify.ready((err) => {
@@ -303,7 +315,8 @@ decoratorNames.forEach(decoratorName => {
         fastify.register(fastifyRedis, {
           client: redis,
           namespace: 'foo',
-          closeClient: true
+          closeClient: true,
+          isDragonfly
         })
 
         fastify.ready((err) => {
@@ -343,11 +356,13 @@ decoratorNames.forEach(decoratorName => {
     fastify
       .register(fastifyRedis, {
         host: '127.0.0.1',
-        namespace
+        namespace,
+        isDragonfly
       })
       .register(fastifyRedis, {
         host: '127.0.0.1',
-        namespace
+        namespace,
+        isDragonfly
       })
 
     fastify.ready((err) => {
@@ -363,10 +378,12 @@ decoratorNames.forEach(decoratorName => {
 
     fastify
       .register(fastifyRedis, {
-        host: '127.0.0.1'
+        host: '127.0.0.1',
+        isDragonfly
       })
       .register(fastifyRedis, {
-        host: '127.0.0.1'
+        host: '127.0.0.1',
+        isDragonfly
       })
 
     fastify.ready((err) => {
@@ -382,7 +399,8 @@ decoratorNames.forEach(decoratorName => {
 
     fastify.register(function (instance, options, next) {
       instance.register(fastifyRedis, {
-        host: '127.0.0.1'
+        host: '127.0.0.1',
+        isDragonfly
       })
       next()
     })
@@ -391,11 +409,13 @@ decoratorNames.forEach(decoratorName => {
       instance
         .register(fastifyRedis, {
           host: '127.0.0.1',
-          namespace: 'test1'
+          namespace: 'test1',
+          isDragonfly
         })
         .register(fastifyRedis, {
           host: '127.0.0.1',
-          namespace: 'test2'
+          namespace: 'test2',
+          isDragonfly
         })
       next()
     })
@@ -414,7 +434,8 @@ decoratorNames.forEach(decoratorName => {
 
     fastify
       .register(fastifyRedis, {
-        host: 'invalid_host'
+        host: 'invalid_host',
+        isDragonfly
       })
 
     fastify.ready((err) => {
@@ -430,7 +451,8 @@ decoratorNames.forEach(decoratorName => {
 
     await fastify.register(fastifyRedis, {
       url: 'redis://127.0.0.1',
-      namespace: 'test'
+      namespace: 'test',
+      isDragonfly
     })
 
     await fastify.ready()
@@ -446,12 +468,14 @@ decoratorNames.forEach(decoratorName => {
 
     await fastify.register(fastifyRedis, {
       url: 'redis://127.0.0.1',
-      namespace: 'one'
+      namespace: 'one',
+      isDragonfly
     })
 
     await fastify.register(fastifyRedis, {
       url: 'redis://127.0.0.1',
-      namespace: 'two'
+      namespace: 'two',
+      isDragonfly
     })
 
     await fastify.ready()
@@ -468,7 +492,8 @@ decoratorNames.forEach(decoratorName => {
 
     // This will throw a `TypeError: this.options.Connector is not a constructor`
     fastify.register(fastifyRedis, {
-      Connector: 'should_fail'
+      Connector: 'should_fail',
+      isDragonfly
     })
 
     fastify.ready(err => {
@@ -485,7 +510,8 @@ decoratorNames.forEach(decoratorName => {
     // This will throw a `TypeError: this.options.Connector is not a constructor`
     fastify.register(fastifyRedis, {
       Connector: 'should_fail',
-      namespace: 'fail'
+      namespace: 'fail',
+      isDragonfly
     })
 
     fastify.ready(err => {
