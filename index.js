@@ -67,7 +67,7 @@ function fastifyRedis (fastify, options, next) {
   }
 
   // Testing this make the process crash on latest TAP :(
-  /* istanbul ignore next */
+  /* c8 ignore next */
   const onEnd = function (err) {
     client
       .off('ready', onReady)
@@ -88,7 +88,7 @@ function fastifyRedis (fastify, options, next) {
   }
 
   // Testing this make the process crash on latest TAP :(
-  /* istanbul ignore next */
+  /* c8 ignore next */
   const onError = function (err) {
     if (err.code === 'ENOTFOUND') {
       onEnd(err)
