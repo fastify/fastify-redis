@@ -89,7 +89,7 @@ function fastifyRedis (fastify, options, next) {
   }
 
   // Testing this make the process crash on latest TAP :(
-  /* c8 ignore next */
+  /* c8 ignore start */
   const onError = function (err) {
     if (err.code === 'ENOTFOUND') {
       onEnd(err)
@@ -106,6 +106,7 @@ function fastifyRedis (fastify, options, next) {
       onEnd(err)
     }
   }
+  /* c8 ignore stop */
 
   // ioredis provides it in a .status property
   if (client.status === 'ready') {
