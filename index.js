@@ -67,7 +67,7 @@ function fastifyRedis (fastify, options, next) {
   }
 
   // Testing this make the process crash on latest TAP :(
-  /* c8 ignore next */
+  /* c8 ignore start */
   const onEnd = function (err) {
     client
       .off('ready', onReady)
@@ -77,6 +77,7 @@ function fastifyRedis (fastify, options, next) {
 
     next(err)
   }
+  /* c8 ignore stop */
 
   const onReady = function () {
     client
