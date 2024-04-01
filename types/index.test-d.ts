@@ -1,11 +1,11 @@
 import Fastify, { FastifyInstance } from 'fastify'
-import IORedis, { Redis } from 'ioredis'
+import IOValKey, { Redis } from 'iovalkey'
 import { expectAssignable, expectDeprecated, expectError, expectType } from 'tsd'
 import fastifyRedis, { FastifyRedis, FastifyRedisPlugin, FastifyRedisNamespacedInstance, FastifyRedisPluginOptions } from '..'
 
 const app: FastifyInstance = Fastify()
-const redis: Redis = new IORedis({ host: 'localhost', port: 6379 })
-const redisCluster= new IORedis.Cluster([{ host: 'localhost', port: 6379 }])
+const redis: Redis = new IOValKey({ host: 'localhost', port: 6379 })
+const redisCluster= new IOValKey.Cluster([{ host: 'localhost', port: 6379 }])
 
 app.register(fastifyRedis, { host: '127.0.0.1' })
 

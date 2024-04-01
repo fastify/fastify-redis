@@ -25,7 +25,8 @@
     "database",
     "speed",
     "cache",
-    "ioredis"
+    "ioredis",
+    "iovalkey"
   ],
   "author": "Tomas Della Vedova - @delvedor (http://delved.org)",
   "license": "MIT",
@@ -45,7 +46,7 @@
   },
   "dependencies": {
     "fastify-plugin": "^4.0.0",
-    "ioredis": "^5.0.0"
+    "iovalkey": "^0.0.1"
   },
   "publishConfig": {
     "access": "public"

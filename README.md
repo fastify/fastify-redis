@@ -18,7 +18,7 @@ Add it to your project with `register` and you are done!
 
 ### Create a new Redis Client
 
-Under the hood [ioredis](https://github.com/luin/ioredis) is used as client, the ``options`` that you pass to `register` will be passed to the Redis client.
+Under the hood [iovalkey](https://github.com/mcollina/iovalkey) is used as client, the ``options`` that you pass to `register` will be passed to the Redis client.
 
 ```js
 const fastify = require('fastify')()
@@ -90,7 +90,7 @@ closed.
 'use strict'
 
 const fastify = require('fastify')()
-const Redis = require('ioredis')
+const Redis = require('iovalkey')
 
 const client = new Redis({ host: 'localhost', port: 6379 })
 
@@ -220,7 +220,7 @@ fastify.listen({ port: 3000 }, function (err) {
 *NB you can find more information about Redis streams and the relevant commands [here](https://redis.io/topics/streams-intro) and [here](https://redis.io/commands#stream).*
 
 ## Redis connection error
-Majority of errors are silent due to the `ioredis` silent error handling but during the plugin registration it will check that the connection with the redis instance is correctly estabilished.
+Majority of errors are silent due to the `iovalkey` silent error handling but during the plugin registration it will check that the connection with the redis instance is correctly estabilished.
 In this case you can receive an `ERR_AVVIO_PLUGIN_TIMEOUT` error if the connection can't be estabilished in the expected time frame or a dedicated error for an invalid connection.
 
 ## Acknowledgements

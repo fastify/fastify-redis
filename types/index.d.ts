@@ -1,5 +1,5 @@
 import { FastifyPluginCallback } from 'fastify';
-import { Cluster, Redis, RedisOptions } from 'ioredis';
+import { Cluster, Redis, RedisOptions } from 'iovalkey';
 
 type FastifyRedisPluginType = FastifyPluginCallback<fastifyRedis.FastifyRedisPluginOptions>
 

@@ -1,7 +1,7 @@
 'use strict'
 
 const fp = require('fastify-plugin')
-const Redis = require('ioredis')
+const Redis = require('iovalkey')
 
 function fastifyRedis (fastify, options, next) {
   const { namespace, url, closeClient = false, ...redisOptions } = options
@@ -95,7 +95,7 @@ function fastifyRedis (fastify, options, next) {
       return
     }
 
-    // Swallow network errors to allow ioredis
+    // Swallow network errors to allow iovalkey
     // to perform reconnection and emit 'end'
     // event if reconnection eventually
     // fails.
@@ -106,7 +106,7 @@ function fastifyRedis (fastify, options, next) {
     }
   }
 
-  // ioredis provides it in a .status property
+  // iovalkey provides it in a .status property
   if (client.status === 'ready') {
     // client is already connected, do not register event handlers
     // call next() directly to avoid ERR_AVVIO_PLUGIN_TIMEOUT

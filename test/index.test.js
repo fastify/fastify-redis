@@ -39,7 +39,7 @@ test('fastify.redis should support url', (t) => {
   const fastify = Fastify()
 
   const fastifyRedis = proxyquire('..', {
-    ioredis: function Redis (path, options) {
+    iovalkey: function Redis (path, options) {
       t.equal(path, 'redis://127.0.0.1')
       t.same(options, {
         otherOption: 'foo'
@@ -160,10 +160,10 @@ test('promises support', (t) => {
   })
 })
 
-test('custom ioredis client that is already connected', (t) => {
+test('custom iovalkey client that is already connected', (t) => {
   t.plan(10)
   const fastify = Fastify()
-  const Redis = require('ioredis')
+  const Redis = require('iovalkey')
   const redis = new Redis({ host: 'localhost', port: 6379 })
 
   // use the client now, so that it is connected and ready
@@ -201,10 +201,10 @@ test('custom ioredis client that is already connected', (t) => {
   })
 })
 
-test('custom ioredis client that is already connected', (t) => {
+test('custom iovalkey client that is already connected', (t) => {
   t.plan(10)
   const fastify = Fastify()
-  const Redis = require('ioredis')
+  const Redis = require('iovalkey')
   const redis = new Redis({ host: 'localhost', port: 6379 })
 
   // use the client now, so that it is connected and ready
@@ -245,7 +245,7 @@ test('custom ioredis client that is already connected', (t) => {
 test('If closeClient is enabled, close the client.', (t) => {
   t.plan(10)
   const fastify = Fastify()
-  const Redis = require('ioredis')
+  const Redis = require('iovalkey')
   const redis = new Redis({ host: 'localhost', port: 6379 })
 
   redis.set('key', 'value', (err) => {
@@ -288,7 +288,7 @@ test('If closeClient is enabled, close the client.', (t) => {
 test('If closeClient is enabled, close the client namespace.', (t) => {
   t.plan(10)
   const fastify = Fastify()
-  const Redis = require('ioredis')
+  const Redis = require('iovalkey')
   const redis = new Redis({ host: 'localhost', port: 6379 })
 
   redis.set('key', 'value', (err) => {
