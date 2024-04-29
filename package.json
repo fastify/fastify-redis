@@ -9,6 +9,7 @@
     "lint": "standard",
     "lint:fix": "standard --fix",
     "redis": "docker run -p 6379:6379 --rm redis",
+    "valkey": "docker run -p 6379:6379 --rm valkey/valkey:7.2",
     "test": "npm run unit && npm run typescript",
     "typescript": "tsd",
     "unit": "tap",
