@@ -490,6 +490,35 @@ test('Should throw when @fastify/redis is initialized with a namespace and an op
   })
 })
 
+test('catch .ping() errors', (t) => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  const fastifyRedis = proxyquire('..', {
+    ioredis: function Redis (path, options) {
+      this.ping = () => {
+        return Promise.reject(new Redis.ReplyError('ping error'))
+      }
+      this.quit = () => {}
+      this.info = cb => cb(null, 'info')
+      this.on = function (name, handler) {
+        return this
+      }
+      this.off = function () { return this }
+
+      return this
+    }
+  })
+
+  fastify.register(fastifyRedis)
+
+  fastify.ready((err) => {
+    t.ok(err)
+    t.equal(err.message, 'ping error')
+    fastify.close()
+  })
+})
+
 setInterval(() => {
   whyIsNodeRunning()
 }, 5000).unref()

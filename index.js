@@ -120,7 +120,7 @@ function fastifyRedis (fastify, options, next) {
       .on('error', onError)
       .on('ready', onReady)
 
-    client.ping()
+    client.ping().catch(onError)
   }
 }
 
