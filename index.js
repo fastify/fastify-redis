@@ -129,7 +129,7 @@ function close (fastify) {
 }
 
 module.exports = fp(fastifyRedis, {
-  fastify: '4.x',
+  fastify: '5.x',
   name: '@fastify/redis'
 })
 module.exports.default = fastifyRedis
