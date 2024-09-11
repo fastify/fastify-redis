@@ -1,12 +1,12 @@
 'use strict'
 
 const whyIsNodeRunning = require('why-is-node-running')
-const { test, before } = require('node:test')
+const { test } = require('node:test')
 const proxyquire = require('proxyquire')
 const Fastify = require('fastify')
 const fastifyRedis = require('..')
 
-before(async () => {
+test.beforeEach(async () => {
   const fastify = Fastify()
 
   fastify.register(fastifyRedis, {
