@@ -12,7 +12,7 @@
     "valkey": "docker run -p 6379:6379 --rm valkey/valkey:7.2",
     "test": "npm run unit && npm run typescript",
     "typescript": "tsd",
-    "unit": "node --test",
+    "unit": "c8 --100 node --test",
     "unit:report": "c8 node --test",
     "unit:verbose": "node --test --test-reporter=spec"
   },
