@@ -14,9 +14,9 @@ declare namespace fastifyRedis {
   export interface FastifyRedisNamespacedInstance {
     [namespace: string]: Redis;
   }
-  
+
   export type FastifyRedis = FastifyRedisNamespacedInstance & Redis;
-  
+
   export type FastifyRedisPluginOptions = (RedisOptions &
   {
     url?: string;
