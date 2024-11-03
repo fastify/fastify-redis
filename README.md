@@ -30,8 +30,8 @@ fastify.register(require('@fastify/redis'), { host: '127.0.0.1' })
 fastify.register(require('@fastify/redis'), { url: 'redis://127.0.0.1', /* other redis options */ })
 
 // OR with more options
-fastify.register(require('@fastify/redis'), { 
-  host: '127.0.0.1', 
+fastify.register(require('@fastify/redis'), {
+  host: '127.0.0.1',
   password: '***',
   port: 6379, // Redis port
   family: 4   // 4 (IPv4) or 6 (IPv6)
@@ -40,7 +40,7 @@ fastify.register(require('@fastify/redis'), {
 
 ### Accessing the Redis Client
 
-Once you have registered your plugin, you can access the Redis client via `fastify.redis`. 
+Once you have registered your plugin, you can access the Redis client via `fastify.redis`.
 
 The client is automatically closed when the fastify instance is closed.
 
@@ -52,8 +52,8 @@ const fastifyRedis = require('@fastify/redis')
 
 const fastify = Fastify({ logger: true })
 
-fastify.register(fastifyRedis, { 
-  host: '127.0.0.1', 
+fastify.register(fastifyRedis, {
+  host: '127.0.0.1',
   password: 'your strong password here',
   port: 6379, // Redis port
   family: 4   // 4 (IPv4) or 6 (IPv6)
