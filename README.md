@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/fastify/fastify-redis/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/fastify/fastify-redis/actions/workflows/ci.yml)
 [![NPM version](https://img.shields.io/npm/v/@fastify/redis.svg?style=flat)](https://www.npmjs.com/package/@fastify/redis)
-[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](https://standardjs.com/)
+[![neostandard javascript style](https://img.shields.io/badge/code_style-neostandard-brightgreen?style=flat)](https://github.com/neostandard/neostandard)
 
 Fastify Redis connection plugin; with this you can share the same Redis connection in every part of your server.
 

@@ -5,7 +5,7 @@ import fastifyRedis, { FastifyRedis, FastifyRedisPlugin, FastifyRedisNamespacedI
 
 const app: FastifyInstance = Fastify()
 const redis: Redis = new IORedis({ host: 'localhost', port: 6379 })
-const redisCluster= new IORedis.Cluster([{ host: 'localhost', port: 6379 }])
+const redisCluster = new IORedis.Cluster([{ host: 'localhost', port: 6379 }])
 
 app.register(fastifyRedis, { host: '127.0.0.1' })
 
