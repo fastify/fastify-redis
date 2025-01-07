@@ -377,14 +377,14 @@ test('Should not throw within different contexts', (t) => {
   const fastify = Fastify()
   t.teardown(() => fastify.close())
 
-  fastify.register(function (instance, options, next) {
+  fastify.register(function (instance, _options, next) {
     instance.register(fastifyRedis, {
       host: '127.0.0.1'
     })
     next()
   })
 
-  fastify.register(function (instance, options, next) {
+  fastify.register(function (instance, _options, next) {
     instance
       .register(fastifyRedis, {
         host: '127.0.0.1',
@@ -495,13 +495,13 @@ test('catch .ping() errors', (t) => {
   const fastify = Fastify()
 
   const fastifyRedis = proxyquire('..', {
-    ioredis: function Redis (path, options) {
+    ioredis: function Redis () {
       this.ping = () => {
         return Promise.reject(new Redis.ReplyError('ping error'))
       }
       this.quit = () => {}
       this.info = cb => cb(null, 'info')
-      this.on = function (name, handler) {
+      this.on = function () {
         return this
       }
       this.off = function () { return this }
