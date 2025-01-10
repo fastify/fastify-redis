@@ -17,9 +17,7 @@ function fastifyRedis (fastify, options, next) {
       return next(new Error(`Redis '${namespace}' instance namespace has already been registered`))
     }
 
-    const closeNamedInstance = (fastify) => {
-      return fastify.redis[namespace].quit()
-    }
+    const closeNamedInstance = (fastify) => fastify.redis[namespace].quit()
 
     if (client) {
       if (closeClient === true) {
