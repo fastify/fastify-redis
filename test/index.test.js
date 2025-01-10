@@ -1,13 +1,13 @@
 'use strict'
 
 const whyIsNodeRunning = require('why-is-node-running')
-const t = require('tap')
+const { test } = require('node:test')
 const proxyquire = require('proxyquire')
-const test = t.test
 const Fastify = require('fastify')
+const Redis = require('ioredis')
 const fastifyRedis = require('..')
 
-t.beforeEach(async () => {
+test.beforeEach(async () => {
   const fastify = Fastify()
 
   fastify.register(fastifyRedis, {
@@ -19,29 +19,27 @@ t.beforeEach(async () => {
   await fastify.close()
 })
 
-test('fastify.redis should exist', (t) => {
-  t.plan(2)
+test('fastify.redis should exist', async (t) => {
+  t.plan(1)
   const fastify = Fastify()
   fastify.register(fastifyRedis, {
     host: '127.0.0.1'
   })
 
-  fastify.ready((err) => {
-    t.error(err)
-    t.ok(fastify.redis)
+  await fastify.ready()
+  t.assert.ok(fastify.redis)
 
-    fastify.close()
-  })
+  await fastify.close()
 })
 
-test('fastify.redis should support url', (t) => {
-  t.plan(3)
+test('fastify.redis should support url', async (t) => {
+  t.plan(2)
   const fastify = Fastify()
 
   const fastifyRedis = proxyquire('..', {
     ioredis: function Redis (path, options) {
-      t.equal(path, 'redis://127.0.0.1')
-      t.same(options, {
+      t.assert.deepStrictEqual(path, 'redis://127.0.0.1')
+      t.assert.deepStrictEqual(options, {
         otherOption: 'foo'
       })
       this.quit = () => {}
@@ -65,277 +63,179 @@ test('fastify.redis should support url', (t) => {
     otherOption: 'foo'
   })
 
-  fastify.ready((err) => {
-    t.error(err)
-    fastify.close()
-  })
+  await fastify.ready()
+
+  await fastify.close()
 })
 
-test('fastify.redis should be the redis client', (t) => {
-  t.plan(4)
+test('fastify.redis should be the redis client', async (t) => {
+  t.plan(1)
   const fastify = Fastify()
 
   fastify.register(fastifyRedis, {
     host: '127.0.0.1'
   })
 
-  fastify.ready((err) => {
-    t.error(err)
+  await fastify.ready()
 
-    fastify.redis.set('key', 'value', (err) => {
-      t.error(err)
-      fastify.redis.get('key', (err, val) => {
-        t.error(err)
-        t.equal(val, 'value')
+  await fastify.redis.set('key', 'value')
+  const val = await fastify.redis.get('key')
+  t.assert.deepStrictEqual(val, 'value')
 
-        fastify.close()
-      })
-    })
-  })
+  await fastify.close()
 })
 
-test('fastify.redis.test namespace should exist', (t) => {
-  t.plan(3)
-
-  const fastify = Fastify()
-  fastify.register(fastifyRedis, {
-    host: '127.0.0.1',
-    namespace: 'test'
-  })
-
-  fastify.ready((err) => {
-    t.error(err)
-    t.ok(fastify.redis)
-    t.ok(fastify.redis.test)
-
-    fastify.close()
-  })
-})
-
-test('fastify.redis.test should be the redis client', (t) => {
-  t.plan(4)
-  const fastify = Fastify()
-
-  fastify.register(fastifyRedis, {
-    host: '127.0.0.1',
-    namespace: 'test'
-  })
-
-  fastify.ready((err) => {
-    t.error(err)
-
-    fastify.redis.test.set('key_namespace', 'value_namespace', (err) => {
-      t.error(err)
-      fastify.redis.test.get('key_namespace', (err, val) => {
-        t.error(err)
-        t.equal(val, 'value_namespace')
-
-        fastify.close()
-      })
-    })
-  })
-})
-
-test('promises support', (t) => {
+test('fastify.redis.test namespace should exist', async (t) => {
   t.plan(2)
+
+  const fastify = Fastify()
+  fastify.register(fastifyRedis, {
+    host: '127.0.0.1',
+    namespace: 'test'
+  })
+
+  await fastify.ready()
+
+  t.assert.ok(fastify.redis)
+  t.assert.ok(fastify.redis.test)
+
+  await fastify.close()
+})
+
+test('fastify.redis.test should be the redis client', async (t) => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  fastify.register(fastifyRedis, {
+    host: '127.0.0.1',
+    namespace: 'test'
+  })
+
+  await fastify.ready()
+
+  await fastify.redis.test.set('key_namespace', 'value_namespace')
+  const val = await fastify.redis.test.get('key_namespace')
+  t.assert.deepStrictEqual(val, 'value_namespace')
+
+  await fastify.close()
+})
+
+test('promises support', async (t) => {
+  t.plan(1)
   const fastify = Fastify()
 
   fastify.register(fastifyRedis, {
     host: '127.0.0.1'
   })
 
-  fastify.ready((err) => {
-    t.error(err)
+  await fastify.ready()
 
-    fastify.redis
-      .set('key', 'value')
-      .then(() => {
-        return fastify.redis.get('key')
-      })
-      .then((val) => {
-        t.equal(val, 'value')
-        fastify.close()
-      })
-      .catch((err) => t.fail(err))
-  })
+  await fastify.redis.set('key', 'value')
+  const val = await fastify.redis.get('key')
+  t.assert.deepStrictEqual(val, 'value')
+
+  await fastify.close()
 })
 
-test('custom ioredis client that is already connected', (t) => {
-  t.plan(10)
+test('custom ioredis client that is already connected', async (t) => {
+  t.plan(3)
   const fastify = Fastify()
   const Redis = require('ioredis')
   const redis = new Redis({ host: 'localhost', port: 6379 })
 
-  // use the client now, so that it is connected and ready
-  redis.set('key', 'value', (err) => {
-    t.error(err)
-    redis.get('key', (err, val) => {
-      t.error(err)
-      t.equal(val, 'value')
+  await redis.set('key', 'value')
+  const val = await redis.get('key')
+  t.assert.deepStrictEqual(val, 'value')
 
-      fastify.register(fastifyRedis, {
-        client: redis,
-        lazyConnect: false
-      })
-
-      fastify.ready((err) => {
-        t.error(err)
-        t.equal(fastify.redis, redis)
-
-        fastify.redis.set('key2', 'value2', (err) => {
-          t.error(err)
-          fastify.redis.get('key2', (err, val) => {
-            t.error(err)
-            t.equal(val, 'value2')
-
-            fastify.close(function (err) {
-              t.error(err)
-              fastify.redis.quit(function (err) {
-                t.error(err)
-              })
-            })
-          })
-        })
-      })
-    })
+  fastify.register(fastifyRedis, {
+    client: redis,
+    lazyConnect: false
   })
+
+  await fastify.ready()
+
+  t.assert.deepStrictEqual(fastify.redis, redis)
+
+  await fastify.redis.set('key2', 'value2')
+  const val2 = await fastify.redis.get('key2')
+  t.assert.deepStrictEqual(val2, 'value2')
+
+  await fastify.close()
+  await fastify.redis.quit()
 })
 
-test('custom ioredis client that is already connected', (t) => {
-  t.plan(10)
+test('If closeClient is enabled, close the client.', async (t) => {
+  t.plan(4)
   const fastify = Fastify()
   const Redis = require('ioredis')
   const redis = new Redis({ host: 'localhost', port: 6379 })
 
-  // use the client now, so that it is connected and ready
-  redis.set('key', 'value', (err) => {
-    t.error(err)
-    redis.get('key', (err, val) => {
-      t.error(err)
-      t.equal(val, 'value')
+  await redis.set('key', 'value')
+  const val = await redis.get('key')
+  t.assert.deepStrictEqual(val, 'value')
 
-      fastify.register(fastifyRedis, {
-        client: redis,
-        namespace: 'foo'
-      })
-
-      fastify.ready((err) => {
-        t.error(err)
-        t.equal(fastify.redis.foo, redis)
-
-        fastify.redis.foo.set('key2', 'value2', (err) => {
-          t.error(err)
-          fastify.redis.foo.get('key2', (err, val) => {
-            t.error(err)
-            t.equal(val, 'value2')
-
-            fastify.close(function (err) {
-              t.error(err)
-              fastify.redis.foo.quit(function (err) {
-                t.error(err)
-              })
-            })
-          })
-        })
-      })
-    })
+  fastify.register(fastifyRedis, {
+    client: redis,
+    closeClient: true
   })
+
+  await fastify.ready()
+
+  t.assert.deepStrictEqual(fastify.redis, redis)
+
+  await fastify.redis.set('key2', 'value2')
+  const val2 = await fastify.redis.get('key2')
+  t.assert.deepStrictEqual(val2, 'value2')
+
+  const originalQuit = fastify.redis.quit
+  fastify.redis.quit = (callback) => {
+    t.assert.ok('redis client closed')
+    originalQuit.call(fastify.redis, callback)
+  }
+
+  await fastify.close()
 })
 
-test('If closeClient is enabled, close the client.', (t) => {
-  t.plan(10)
+test('If closeClient is enabled, close the client namespace.', async (t) => {
+  t.plan(4)
   const fastify = Fastify()
   const Redis = require('ioredis')
   const redis = new Redis({ host: 'localhost', port: 6379 })
 
-  redis.set('key', 'value', (err) => {
-    t.error(err)
-    redis.get('key', (err, val) => {
-      t.error(err)
-      t.equal(val, 'value')
+  await redis.set('key', 'value')
+  const val = await redis.get('key')
+  t.assert.deepStrictEqual(val, 'value')
 
-      fastify.register(fastifyRedis, {
-        client: redis,
-        closeClient: true
-      })
-
-      fastify.ready((err) => {
-        t.error(err)
-        t.equal(fastify.redis, redis)
-
-        fastify.redis.set('key2', 'value2', (err) => {
-          t.error(err)
-          fastify.redis.get('key2', (err, val) => {
-            t.error(err)
-            t.equal(val, 'value2')
-
-            const originalQuit = fastify.redis.quit
-            fastify.redis.quit = (callback) => {
-              t.pass('redis client closed')
-              originalQuit.call(fastify.redis, callback)
-            }
-
-            fastify.close(function (err) {
-              t.error(err)
-            })
-          })
-        })
-      })
-    })
+  fastify.register(fastifyRedis, {
+    client: redis,
+    namespace: 'foo',
+    closeClient: true
   })
+
+  await fastify.ready()
+
+  t.assert.deepStrictEqual(fastify.redis.foo, redis)
+
+  await fastify.redis.foo.set('key2', 'value2')
+  const val2 = await fastify.redis.foo.get('key2')
+  t.assert.deepStrictEqual(val2, 'value2')
+
+  const originalQuit = fastify.redis.foo.quit
+  fastify.redis.foo.quit = (callback) => {
+    t.assert.ok('redis client closed')
+    originalQuit.call(fastify.redis.foo, callback)
+  }
+
+  await fastify.close()
 })
 
-test('If closeClient is enabled, close the client namespace.', (t) => {
-  t.plan(10)
-  const fastify = Fastify()
-  const Redis = require('ioredis')
-  const redis = new Redis({ host: 'localhost', port: 6379 })
-
-  redis.set('key', 'value', (err) => {
-    t.error(err)
-    redis.get('key', (err, val) => {
-      t.error(err)
-      t.equal(val, 'value')
-
-      fastify.register(fastifyRedis, {
-        client: redis,
-        namespace: 'foo',
-        closeClient: true
-      })
-
-      fastify.ready((err) => {
-        t.error(err)
-        t.equal(fastify.redis.foo, redis)
-
-        fastify.redis.foo.set('key2', 'value2', (err) => {
-          t.error(err)
-          fastify.redis.foo.get('key2', (err, val) => {
-            t.error(err)
-            t.equal(val, 'value2')
-
-            const originalQuit = fastify.redis.foo.quit
-            fastify.redis.foo.quit = (callback) => {
-              t.pass('redis client closed')
-              originalQuit.call(fastify.redis.foo, callback)
-            }
-
-            fastify.close(function (err) {
-              t.error(err)
-            })
-          })
-        })
-      })
-    })
-  })
-})
-
-test('fastify.redis.test should throw with duplicate connection namespaces', (t) => {
+test('fastify.redis.test should throw with duplicate connection namespaces', async (t) => {
   t.plan(1)
 
   const namespace = 'test'
 
   const fastify = Fastify()
-  t.teardown(() => fastify.close())
+  t.after(() => fastify.close())
 
   fastify
     .register(fastifyRedis, {
@@ -347,16 +247,14 @@ test('fastify.redis.test should throw with duplicate connection namespaces', (t)
       namespace
     })
 
-  fastify.ready((err) => {
-    t.equal(err.message, `Redis '${namespace}' instance namespace has already been registered`)
-  })
+  await t.assert.rejects(fastify.ready(), new Error(`Redis '${namespace}' instance namespace has already been registered`))
 })
 
-test('Should throw when trying to register multiple instances without giving a namespace', (t) => {
+test('Should throw when trying to register multiple instances without giving a namespace', async (t) => {
   t.plan(1)
 
   const fastify = Fastify()
-  t.teardown(() => fastify.close())
+  t.after(() => fastify.close())
 
   fastify
     .register(fastifyRedis, {
@@ -366,16 +264,14 @@ test('Should throw when trying to register multiple instances without giving a n
       host: '127.0.0.1'
     })
 
-  fastify.ready((err) => {
-    t.equal(err.message, '@fastify/redis has already been registered')
-  })
+  await t.assert.rejects(fastify.ready(), new Error('@fastify/redis has already been registered'))
 })
 
-test('Should not throw within different contexts', (t) => {
+test('Should not throw within different contexts', async (t) => {
   t.plan(1)
 
   const fastify = Fastify()
-  t.teardown(() => fastify.close())
+  t.after(() => fastify.close())
 
   fastify.register(function (instance, _options, next) {
     instance.register(fastifyRedis, {
@@ -397,33 +293,30 @@ test('Should not throw within different contexts', (t) => {
     next()
   })
 
-  fastify.ready((error) => {
-    t.error(error)
-  })
+  await fastify.ready()
+  t.assert.ok(fastify)
 })
 
 // Skipped because it makes TAP crash
-test('Should throw when trying to connect on an invalid host', { skip: true }, (t) => {
+test('Should throw when trying to connect on an invalid host', { skip: true }, async (t) => {
   t.plan(1)
 
   const fastify = Fastify({ pluginTimeout: 20000 })
-  t.teardown(() => fastify.close())
+  t.after(() => fastify.close())
 
   fastify
     .register(fastifyRedis, {
       host: 'invalid_host'
     })
 
-  fastify.ready((err) => {
-    t.ok(err)
-  })
+  await t.assert.rejects(fastify.ready())
 })
 
 test('Should successfully create a Redis client when registered with a `url` option and without a `client` option in a namespaced instance', async t => {
   t.plan(2)
 
   const fastify = Fastify()
-  t.teardown(fastify.close.bind(fastify))
+  t.after(() => fastify.close())
 
   await fastify.register(fastifyRedis, {
     url: 'redis://127.0.0.1',
@@ -431,15 +324,15 @@ test('Should successfully create a Redis client when registered with a `url` opt
   })
 
   await fastify.ready()
-  t.ok(fastify.redis)
-  t.ok(fastify.redis.test)
+  t.assert.ok(fastify.redis)
+  t.assert.ok(fastify.redis.test)
 })
 
 test('Should be able to register multiple namespaced @fastify/redis instances', async t => {
   t.plan(3)
 
   const fastify = Fastify()
-  t.teardown(fastify.close.bind(fastify))
+  t.after(() => fastify.close())
 
   await fastify.register(fastifyRedis, {
     url: 'redis://127.0.0.1',
@@ -452,32 +345,30 @@ test('Should be able to register multiple namespaced @fastify/redis instances', 
   })
 
   await fastify.ready()
-  t.ok(fastify.redis)
-  t.ok(fastify.redis.one)
-  t.ok(fastify.redis.two)
+  t.assert.ok(fastify.redis)
+  t.assert.ok(fastify.redis.one)
+  t.assert.ok(fastify.redis.two)
 })
 
-test('Should throw when @fastify/redis is initialized with an option that makes Redis throw', (t) => {
+test('Should throw when @fastify/redis is initialized with an option that makes Redis throw', async (t) => {
   t.plan(1)
 
   const fastify = Fastify()
-  t.teardown(fastify.close.bind(fastify))
+  t.after(() => fastify.close())
 
   // This will throw a `TypeError: this.options.Connector is not a constructor`
   fastify.register(fastifyRedis, {
     Connector: 'should_fail'
   })
 
-  fastify.ready(err => {
-    t.ok(err)
-  })
+  await t.assert.rejects(fastify.ready())
 })
 
-test('Should throw when @fastify/redis is initialized with a namespace and an option that makes Redis throw', (t) => {
+test('Should throw when @fastify/redis is initialized with a namespace and an option that makes Redis throw', async (t) => {
   t.plan(1)
 
   const fastify = Fastify()
-  t.teardown(fastify.close.bind(fastify))
+  t.after(() => fastify.close())
 
   // This will throw a `TypeError: this.options.Connector is not a constructor`
   fastify.register(fastifyRedis, {
@@ -485,14 +376,13 @@ test('Should throw when @fastify/redis is initialized with a namespace and an op
     namespace: 'fail'
   })
 
-  fastify.ready(err => {
-    t.ok(err)
-  })
+  await t.assert.rejects(fastify.ready())
 })
 
-test('catch .ping() errors', (t) => {
-  t.plan(2)
+test('catch .ping() errors', async (t) => {
+  t.plan(1)
   const fastify = Fastify()
+  t.after(() => fastify.close())
 
   const fastifyRedis = proxyquire('..', {
     ioredis: function Redis () {
@@ -512,11 +402,7 @@ test('catch .ping() errors', (t) => {
 
   fastify.register(fastifyRedis)
 
-  fastify.ready((err) => {
-    t.ok(err)
-    t.equal(err.message, 'ping error')
-    fastify.close()
-  })
+  await t.assert.rejects(fastify.ready(), new Redis.ReplyError('ping error'))
 })
 
 setInterval(() => {
