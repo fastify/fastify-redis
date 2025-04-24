@@ -111,6 +111,19 @@ const client = new Redis({ host: 'localhost', port: 6379 })
 fastify.register(require('@fastify/redis'), { client })
 ```
 
+You can also supply a *Redis Cluster* instance to the client:
+
+```js
+'use strict'
+
+const fastify = require('fastify')()
+const Redis = require('ioredis')
+
+const client = new Redis.Cluster([{ host: 'localhost', port: 6379 }]);
+
+fastify.register(require('@fastify/redis'), { client })
+```
+
 Note: by default, *@fastify/redis* will **not** automatically close the client
 connection when the Fastify server shuts down.
 
