@@ -96,7 +96,7 @@ function fastifyRedis (fastify, options, next) {
     if (err.code === 'SELF_SIGNED_CERT_IN_CHAIN') {
       // This error is not recoverable because ioredis will never be able to connect to the server unless the user changes the TLS options.
       // Provide a more helpful error message to the user so they understand how to fix the issue instead of the plugin timing out.
-      const error = new Error("The server certificate does not match the host name. Consider setting the 'tls.rejectUnauthorized' option to 'false' or providing a valid certificate using the 'tls.ca' option.", { cause: err })
+      const error = new Error("Self-signed certificate detected in the certificate chain. Consider setting the 'tls.rejectUnauthorized' option to 'false' or providing a valid certificate using the 'tls.ca' option.", { cause: err })
       onEnd(error)
       return
     }
