@@ -405,6 +405,36 @@ test('catch .ping() errors', async (t) => {
   await t.assert.rejects(fastify.ready(), new Redis.ReplyError('ping error'))
 })
 
+test("Should propagate SELF_SIGNED_CERT_IN_CHAIN error", async (t) => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  const fastifyRedis = proxyquire('..', {
+    ioredis: function Redis () {
+      this.ping = () => {
+        const error = new Error('self signed certificate in certificate chain')
+        error.code = 'SELF_SIGNED_CERT_IN_CHAIN'
+        return Promise.reject(error)
+      }
+      this.quit = () => {}
+      this.info = cb => cb(null, 'info')
+      this.on = function () {
+        return this
+      }
+      this.off = function () { return this }
+
+      return this
+    }
+  })
+  fastify.register(fastifyRedis)
+
+  const error = new Error('self signed certificate in certificate chain')
+  error.code = 'SELF_SIGNED_CERT_IN_CHAIN'
+  await t.assert.rejects(fastify.ready(), error)
+})
+
 setInterval(() => {
   whyIsNodeRunning()
 }, 5000).unref()
