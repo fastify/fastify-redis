@@ -93,6 +93,11 @@ function fastifyRedis (fastify, options, next) {
       onEnd(err)
       return
     }
+    if (err.code === 'SELF_SIGNED_CERT_IN_CHAIN') {
+      // This error is not recoverable because ioredis will never be able to connect to the server unless the user changes the TLS options.
+      onEnd(err)
+      return
+    }
 
     // Swallow network errors to allow ioredis
     // to perform reconnection and emit 'end'
