@@ -405,7 +405,7 @@ test('catch .ping() errors', async (t) => {
   await t.assert.rejects(fastify.ready(), new Redis.ReplyError('ping error'))
 })
 
-test("Should propagate SELF_SIGNED_CERT_IN_CHAIN error", async (t) => {
+test('Should propagate SELF_SIGNED_CERT_IN_CHAIN error', async (t) => {
   t.plan(1)
 
   const fastify = Fastify()
