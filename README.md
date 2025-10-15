@@ -244,7 +244,7 @@ fastify.listen({ port: 3000 }, function (err) {
   }
 })
 ```
-*NB you can find more information about Redis streams and the relevant commands [here](https://redis.io/topics/streams-intro) and [here](https://redis.io/commands#stream).*
+> ℹ️ Note: you can find more information about Redis streams and the relevant commands [here](https://redis.io/topics/streams-intro) and [here](https://redis.io/commands#stream).
 
 ## Redis connection error
 The majority of errors are silent due to the `ioredis` silent error handling but during the plugin registration it will check that the connection with the redis instance is correctly estabilished.
