@@ -33,15 +33,14 @@ test('fastify.redis should exist', async (t) => {
 })
 
 test('fastify.redis should support url', async (t) => {
-  t.plan(2)
+  t.plan(3)
   const fastify = Fastify()
 
   const fastifyRedis = proxyquire('..', {
     ioredis: function Redis (path, options) {
       t.assert.deepStrictEqual(path, 'redis://127.0.0.1')
-      t.assert.deepStrictEqual(options, {
-        otherOption: 'foo'
-      })
+      t.assert.deepStrictEqual(options.otherOption, 'foo')
+      t.assert.match(options.clientInfoTag, /^fastify-redis_v\d+\.\d+\.\d+$/)
       this.quit = () => {}
       this.info = cb => cb(null, 'info')
       this.on = function (name, handler) {
@@ -433,6 +432,145 @@ test('Should propagate SELF_SIGNED_CERT_IN_CHAIN error', async (t) => {
   const error = new Error('self signed certificate in certificate chain')
   error.code = 'SELF_SIGNED_CERT_IN_CHAIN'
   await t.assert.rejects(fastify.ready(), error)
+})
+
+test('should use default clientInfoTag when not provided', async (t) => {
+  t.plan(1)
+
+  const fastify = Fastify()
+
+  const fastifyRedis = proxyquire('..', {
+    ioredis: function Redis (options) {
+      t.assert.match(options.clientInfoTag, /^fastify-redis_v\d+\.\d+\.\d+$/)
+      this.quit = () => {}
+      this.info = cb => cb(null, 'info')
+      this.on = function (name, handler) {
+        if (name === 'ready') {
+          handler(null, 'ready')
+        }
+        return this
+      }
+      this.status = 'ready'
+      this.off = function () { return this }
+      return this
+    }
+  })
+
+  fastify.register(fastifyRedis, {
+    host: '127.0.0.1'
+  })
+
+  await fastify.ready()
+  await fastify.close()
+})
+
+test('should use custom clientInfoTag when provided', async (t) => {
+  t.plan(1)
+
+  const fastify = Fastify()
+
+  const fastifyRedis = proxyquire('..', {
+    ioredis: function Redis (options) {
+      t.assert.deepStrictEqual(options.clientInfoTag, 'my-custom-app')
+      this.quit = () => {}
+      this.info = cb => cb(null, 'info')
+      this.on = function (name, handler) {
+        if (name === 'ready') {
+          handler(null, 'ready')
+        }
+        return this
+      }
+      this.status = 'ready'
+      this.off = function () { return this }
+      return this
+    }
+  })
+
+  fastify.register(fastifyRedis, {
+    host: '127.0.0.1',
+    clientInfoTag: 'my-custom-app'
+  })
+
+  await fastify.ready()
+  await fastify.close()
+})
+
+test('should not set clientInfoTag when custom client is provided', async (t) => {
+  t.plan(1)
+  const fastify = Fastify()
+  const redis = new Redis({ host: 'localhost', port: 6379 })
+
+  fastify.register(fastifyRedis, {
+    client: redis,
+    closeClient: true
+  })
+
+  await fastify.ready()
+  // Custom client should be used as-is without modification
+  t.assert.deepStrictEqual(fastify.redis, redis)
+
+  await fastify.close()
+})
+
+test('should use default clientInfoTag with url option', async (t) => {
+  t.plan(1)
+
+  const fastify = Fastify()
+
+  const fastifyRedis = proxyquire('..', {
+    ioredis: function Redis (_url, options) {
+      t.assert.match(options.clientInfoTag, /^fastify-redis_v\d+\.\d+\.\d+$/)
+      this.quit = () => {}
+      this.info = cb => cb(null, 'info')
+      this.on = function (name, handler) {
+        if (name === 'ready') {
+          handler(null, 'ready')
+        }
+        return this
+      }
+      this.status = 'ready'
+      this.off = function () { return this }
+      return this
+    }
+  })
+
+  fastify.register(fastifyRedis, {
+    url: 'redis://127.0.0.1'
+  })
+
+  await fastify.ready()
+  await fastify.close()
+})
+
+test('should fallback to fastify-redis when package.json version is unavailable', async (t) => {
+  t.plan(1)
+
+  const fastify = Fastify()
+
+  const fastifyRedis = proxyquire('..', {
+    ioredis: function Redis (options) {
+      t.assert.deepStrictEqual(options.clientInfoTag, 'fastify-redis')
+      this.quit = () => {}
+      this.info = cb => cb(null, 'info')
+      this.on = function (name, handler) {
+        if (name === 'ready') {
+          handler(null, 'ready')
+        }
+        return this
+      }
+      this.status = 'ready'
+      this.off = function () { return this }
+      return this
+    },
+    './package.json': null
+  })
+
+  fastify.register(fastifyRedis, {
+    host: '127.0.0.1'
+  })
+
+  await fastify.ready()
+  await fastify.close()
 })
 
 setInterval(() => {

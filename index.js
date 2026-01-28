@@ -3,8 +3,26 @@
 const fp = require('fastify-plugin')
 const Redis = require('ioredis')
 
+/**
+ * Get the default clientInfoTag for identifying the framework in Redis CLIENT SETINFO.
+ * @returns {string} The client info tag (e.g., "fastify-redis_v7.1.0")
+ */
+function getDefaultClientInfoTag () {
+  try {
+    const version = require('./package.json').version
+    return `fastify-redis_v${version}`
+  } catch {
+    return 'fastify-redis'
+  }
+}
+
 function fastifyRedis (fastify, options, next) {
   const { namespace, url, closeClient = false, ...redisOptions } = options
+
+  // Set default clientInfoTag if not provided and client is not custom
+  if (!options.client && redisOptions.clientInfoTag === undefined) {
+    redisOptions.clientInfoTag = getDefaultClientInfoTag()
+  }
 
   let client = options.client || null
 

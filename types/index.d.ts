@@ -21,6 +21,13 @@ declare namespace fastifyRedis {
   {
     url?: string;
     namespace?: string;
+    /**
+     * Tag to append to the library name in CLIENT SETINFO (e.g., "ioredis(fastify-redis_v7.1.0)").
+     * This helps identify the framework using the Redis client library.
+     * @link https://redis.io/docs/latest/commands/client-setinfo/
+     * @default "fastify-redis_v{version}" (e.g., "fastify-redis_v7.1.0")
+     */
+    clientInfoTag?: string;
   }) | {
     client: Redis | Cluster;
     namespace?: string;
