@@ -33,12 +33,13 @@ test('fastify.redis should exist', async (t) => {
 })
 
 test('fastify.redis should support url', async (t) => {
-  t.plan(3)
+  t.plan(4)
   const fastify = Fastify()
 
   const fastifyRedis = proxyquire('..', {
     ioredis: function Redis (path, options) {
       t.assert.deepStrictEqual(path, 'redis://127.0.0.1')
+      t.assert.deepStrictEqual(Object.keys(options).sort(), ['clientInfoTag', 'otherOption'])
       t.assert.deepStrictEqual(options.otherOption, 'foo')
       t.assert.match(options.clientInfoTag, /^fastify-redis_v\d+\.\d+\.\d+$/)
       this.quit = () => {}
