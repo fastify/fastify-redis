@@ -75,11 +75,6 @@
     "fastify-plugin": "^5.0.0",
     "ioredis": "^5.3.2"
   },
-  "tstyche": {
-    "testFileMatch": [
-      "types/*.tst.ts"
-    ]
-  },
   "publishConfig": {
     "access": "public"
   }
