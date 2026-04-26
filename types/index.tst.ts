@@ -20,9 +20,9 @@ app.register(fastifyRedis, {
   url: 'redis://127.0.0.1:6379'
 })
 
-expect({
+expect<FastifyRedisPluginOptions>().type.toBeAssignableFrom({
   client: redisCluster
-}).type.toBeAssignableTo<FastifyRedisPluginOptions>()
+})
 
 expect(app.register).type.not.toBeCallableWith(fastifyRedis, {
   namespace: 'three',
