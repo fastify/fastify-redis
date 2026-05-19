@@ -36,10 +36,7 @@ declare namespace fastifyRedis {
      */
     closeClient?: boolean;
   }
-  /*
-   * @deprecated Use `FastifyRedisPluginOptions` instead
-   */
-  export type FastifyRedisPlugin = FastifyRedisPluginOptions
+
   export const fastifyRedis: FastifyRedisPluginType
   export { fastifyRedis as default }
 }
