@@ -32,7 +32,7 @@ Add it to your project with `register` and you are done!
 
 ### Create a new Redis Client
 
-Under the hood [ioredis](https://github.com/luin/ioredis) is used as client, the ``options`` that you pass to `register` will be passed to the Redis client.
+Under the hood [ioredis](https://github.com/redis/ioredis) is used as client, the ``options`` that you pass to `register` will be passed to the Redis client.
 
 ```js
 const fastify = require('fastify')()
@@ -244,7 +244,7 @@ fastify.listen({ port: 3000 }, function (err) {
   }
 })
 ```
-> ℹ️ Note: you can find more information about Redis streams and the relevant commands [here](https://redis.io/topics/streams-intro) and [here](https://redis.io/commands#stream).
+> ℹ️ Note: you can find more information about Redis streams and the relevant commands [here](https://redis.io/docs/latest/develop/use-cases/streaming/) and [here](https://redis.io/docs/latest/commands/?group=stream).
 
 ## Redis connection error
 The majority of errors are silent due to the `ioredis` silent error handling but during the plugin registration it will check that the connection with the redis instance is correctly estabilished.
@@ -254,7 +254,9 @@ In this case, you can receive an `ERR_AVVIO_PLUGIN_TIMEOUT` error if the connect
 
 This project is kindly sponsored by:
 - [nearForm](https://nearform.com)
-- [LetzDoIt](https://www.letzdoitapp.com/)
+
+Past sponsors:
+- LetzDoIt
 
 ## License
 
